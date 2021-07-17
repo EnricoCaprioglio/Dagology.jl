@@ -19,7 +19,8 @@ k_out, k_in = degree_distr(g);
 #############################################################
 
 
-@test true
+@test true # just to check everything is working fine
+
 @testset "Dagology" begin
 
 end
