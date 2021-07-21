@@ -21,3 +21,10 @@ using LightGraphs
     @test length(k_in) == size(A)[1]
     # count(i->(i!=0), k_out) # check edges have been added
 end
+
+# example of Longest path suing imported package from networkx
+using PyCall
+nx = pyimport("networkx")
+graph = nx.DiGraph()
+graph.add_edges_from([("root", "a"), ("a", "b"), ("a", "e"), ("b", "c"), ("b", "d"), ("d", "e")])
+nx.algorithms.dag.dag_longest_path(graph)
