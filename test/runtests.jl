@@ -89,5 +89,19 @@ start = round(Int, starts[1]);
 dist = my_sslp(g, order, start)
 # dist = my_sslp_v2(g, order, start)
 maximum(dist)
-# TODO make list integers
+# TODO make dist vector integers
+using LongestPaths
+find_longest_path(g)
 
+# to test these functions we are going to create a long
+# path ourselves
+old_node = 5;
+for i in 1:60
+    new_node = rand(old_node+1:old_node+10)
+    add_edge!(g, old_node, new_node)
+    print(old_node, " and ", new_node, "\n")
+    old_node = copy(new_node);
+end
+test_dist = my_sslp_v2(g, order, 5)
+maximum(test_dist)
+# there is some mistake here somewhere
