@@ -13,6 +13,16 @@ function find_sources(g::SimpleDiGraph{Int64})
     return findall(x->(x==0), [length(i) for i ∈ g.badjlist])
 end
 
+"""
+    find_sinks(g::SimpleDiGraph{Int64})
+
+    returns an array containing the nodes with
+    in-degree equal to Zero, i.e. k^{in} = 0
+"""
+function find_sinks(g::SimpleDiGraph{Int64})
+    return findall(x->(x==0), [length(i) for i ∈ g.fadjlist])
+end
+
 # Depth First Search function for ordering
 function _dfs_for_TopSort(index, start, visited, order, g)
     visited[start] = true;
