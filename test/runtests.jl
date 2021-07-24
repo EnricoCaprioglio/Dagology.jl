@@ -24,14 +24,14 @@ end
 
 ##########################################################################
 # check box_space digraph is a DAG
-@testset "is box space digraph cyclic" begin
+@testset "is cube space digraph cyclic" begin
     for N in 2:100
-        (positions, g) = box_space_digraph(N, 3);
+        (positions, g) = cube_space_digraph(N, 3);
         @test is_cyclic(g) == false
     end
 end
 # check cone_space digraph is a DAG
-@testset "is box space digraph cyclic" begin
+@testset "is cone space digraph cyclic" begin
     p = 1; R = 2;
     (positions, g) = cone_space_digraph(1000, 3, p, R);
     @test is_cyclic(g) == false
@@ -119,7 +119,7 @@ end
 ###########################################################################
 # Test DAG Longest Path
 N = 10;
-(positions, g) = box_space_digraph(N, 2, 0.7);
+(positions, g) = cube_space_digraph(N, 2, 0.7);
 # g.fadjlist
 gplot(g, nodelabel = collect(1:N), layout = circular_layout)
 order = topological_sort_by_dfs(g);     # using lightGraphs function
