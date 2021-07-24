@@ -1,5 +1,4 @@
 using LightGraphs
-using Plots
 using LinearAlgebra
 
 
@@ -19,8 +18,8 @@ using LinearAlgebra
         g            Directed Acyclic Graph, g::SimpleDiGraph{Int64}
     """
 function cube_space_digraph(N::Int64, d::Int64, p = 1.0)
-    Box_pos = rand(N,d)
-    g = SimpleDiGraph(N)
+    Box_pos = rand(N,d);
+    g = SimpleDiGraph(N);
     for i in 1:N
         for j in 1:N
             if (all(Box_pos[i,:]-Box_pos[j,:].<0) && isless(rand(1)[1],p))
@@ -30,7 +29,6 @@ function cube_space_digraph(N::Int64, d::Int64, p = 1.0)
     end
     return Box_pos, g
 end
-
 
 """
     cone_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0, R::Float16 = Inf16)
@@ -62,18 +60,18 @@ end
                      node i.
         g            Directed Acyclic Graph, g::SimpleDiGraph{Int64}
     """
-function cone_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0, R::Float16 = Inf16)
-    time_vec = rand(N);                     # times
-    sort!(time_vec);                        # time ordering
-    Box_pos = hcat(time_vec,rand(N,d-1));   # positions
-    g = SimpleDiGraph(N);
-    for i in 1:N
-        for j in i:N
-            time_sep = abs(norm(Box_pos[j,2:d]) - norm(Box_pos[i,2:d]))
-            if time_sep < R && isless(rand(1)[1],p)
-                add_edge!(g, i, j);
-            end
-        end
-    end
-    return Box_pos, g
-end
+# function cone_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0, R::Float16 = Inf16)
+#     time_vec = rand(N);                     # times
+#     sort!(time_vec);                        # time ordering
+#     Box_pos = hcat(time_vec,rand(N,d-1));   # positions
+#     g = SimpleDiGraph(N);
+#     for i in 1:N
+#         for j in i:N
+#             time_sep = abs(norm(Box_pos[j,2:d]) - norm(Box_pos[i,2:d]))
+#             if time_sep < R && isless(rand(1)[1],p)
+#                 add_edge!(g, i, j);
+#             end
+#         end
+#     end
+#     return Box_pos, g
+# end
