@@ -1,6 +1,8 @@
 using Base: Int32, Int64
 using LightGraphs
 
+# TODO, better docstrings for all functinos
+
 """
     find_source(g::SimpleDiGraph{Int64})
 
