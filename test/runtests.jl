@@ -22,86 +22,117 @@ using LightGraphs
     # count(i->(i!=0), k_out) # check edges have been added
 end
 
-# example of Longest path using imported package from networkx
-using PyCall
-nx = pyimport("networkx")
-# if pyimport doesn't work add the python package using Conda as follows
-# using Conda
-# Conda.add("PackageName")
-graph = nx.DiGraph()
-graph.add_edges_from([("root", "a"), ("a", "b"), ("a", "e"), ("b", "c"), ("b", "d"), ("d", "e")])
-nx.algorithms.dag.dag_longest_path(graph)
+##########################################################################
+# check box_space digraph is a DAG
+@testset "is box space digraph cyclic" begin
+    for N in 2:100
+        (positions, g) = box_space_digraph(N, 3);
+        @test is_cyclic(g) == false
+    end
+end
+# check cone_space digraph is a DAG
+@testset "is box space digraph cyclic" begin
+    p = 1; R = 2;
+    (positions, g) = cone_space_digraph(1000, 3, p, R);
+    @test is_cyclic(g) == false
+end
+# TODO fix cone_spaec_digraph
+
+using LongestPaths
+n = 10
+g1 = path_digraph(n)
+
+# from LongestPaths by
+# https://github.com/GunnarFarneback/LongestPaths.jl/blob/master/test/runtests.jl
+# begin #
+abstract type AbstractWeightedPath{T} end
+struct UnweightedPath <: AbstractWeightedPath{Int} end
+function dfs_longest_path(g::AbstractGraph{T}, weights, first_vertex,
+        last_vertex = 0) where T
+    visited = falses(nv(g))
+    path = Vector{T}()
+    longest_path = Vector{T}()
+    push!(path, first_vertex)
+    visited[first_vertex] = true
+    recurse_dfs_longest_path!(g, weights, last_vertex, visited,
+            path, longest_path)
+    return longest_path
+end
+
+function recurse_dfs_longest_path!(g, weights, last_vertex, visited,
+             path, longest_path)
+    v = path[end]
+    if (last_vertex == 0 || v == last_vertex) && (isempty(longest_path) || path_length(path, weights) > path_length(longest_path, weights))
+        resize!(longest_path, length(path))
+        copyto!(longest_path, path)
+    end
+    if v == last_vertex
+        return
+    end
+    for n in outneighbors(g, v)
+            if !visited[n]
+            push!(path, n)
+            visited[n] = true
+            recurse_dfs_longest_path!(g, weights, last_vertex, visited, path,
+                            longest_path)
+            visited[n] = false
+            pop!(path)
+        end
+    end
+end
+
+function path_length(path, weights::Dict{Tuple{Int, Int}, <:Any})
+    L = 0
+    for k = 2:length(path)
+        L += weights[(path[k - 1], path[k])]
+    end
+    return L
+end
+# end #
+
+function get_weights(g) # this is just to be able to use the above functions
+    weight = Dict();
+    for i in 1:length(g.fadjlist)
+        for j in 1:length(g.fadjlist[i])
+            if length(g.fadjlist[i]) != 0
+                weight[(i, g.fadjlist[i][j])] = 1;
+            end
+        end
+    end
+    return weight
+end
 
 ##########################################################################
-# example test using LightGraphs
-using LightGraphs
-g = SimpleDiGraph(13); # this is a digraph
-add_edge!(g, 1, 4);
-add_edge!(g, 5, 1);
-add_edge!(g, 5, 4);
-add_edge!(g, 5, 6);
-add_edge!(g, 6, 10);
-add_edge!(g, 6, 11);
-add_edge!(g, 11, 10);
-add_edge!(g, 10, 12);
-add_edge!(g, 3, 1);
-add_edge!(g, 3, 2);
-add_edge!(g, 2, 4);
-add_edge!(g, 4, 7);
-add_edge!(g, 7, 9);
-add_edge!(g, 4, 8);
-add_edge!(g, 8, 10);
-add_edge!(g, 8, 9);
-add_edge!(g, 9, 12);
-add_edge!(g, 10, 13);
-
-# second test using box_space_digraph()
-(positions, g) = box_space_digraph(1000, 2);
-
-# third test using cone_space_digraph()
-(positions, g) = cone_space_digraph(15, 2);
-
-##########################################################################
-# plot test graph
-using GraphPlot
-# nodelabel = ["A","B","C","D","E","F","G","H","I","J","K","L","M"];
-nodesize = [LightGraphs.outdegree(g, v) for v in LightGraphs.vertices(g)];
-N = Int32(size(g)[1]);
-DAG_Plot_2D(positions, g)
-gplot(g, nodelabel=collect(1:N), layout=circular_layout) # nodesize = nodesize 
-g.fadjlist    # out degree adjacency list
-g.badjlist    # in degree adjacency list
-g.ne          # number of edges
-
-##########################################################################
-# test functions
+# test Topological Sort
 # compare my TopSort to LightGraphs function
-@test my_TopSort_by_dfs(g) == topological_sort_by_dfs(g)
+@testset "Topological sort" begin
+    for N in 2:100
+        (positions, g) = box_space_digraph(N, 3);
+        @test my_TopSort_by_dfs(g) == topological_sort_by_dfs(g);
+    end
+end
 # for large graphs there seem to be differences between the two
 # topological sorting functions. Recall it is not unique the
-# toplogical order from a single DAG. However this is transitive
-# so I am not sure it is fine.
-order = topological_sort_by_dfs(g);     # using lighgraphs function
+# toplogical order from a single DAG.
+# TODO try using transitive DAGs to test the function
+
+###########################################################################
+# Test DAG Longest Path
+N = 10;
+(positions, g) = box_space_digraph(N, 2, 0.7);
+# g.fadjlist
+gplot(g, nodelabel = collect(1:N), layout = circular_layout)
+order = topological_sort_by_dfs(g);     # using lightGraphs function
 starts = find_sources(g);
-start = round(Int, starts[1]);
-
-@test my_sslp(g, order, start) == my_sslp_v2(g, order, start)
-dist = my_sslp(g, order, start)
-# dist = my_sslp_v2(g, order, start)
-maximum(dist)
-# TODO make dist vector integers
-using LongestPaths
-find_longest_path(g)
-
-# to test these functions we are going to create a long
-# path ourselves
-old_node = 5;
-for i in 1:60
-    new_node = rand(old_node+1:old_node+10)
-    add_edge!(g, old_node, new_node)
-    print(old_node, " and ", new_node, "\n")
-    old_node = copy(new_node);
+# Store Longest paths in a dictionary for each source
+longest_path_dict = Dict()
+weight = get_weights(g);
+for start in starts
+    # @test my_sslp(g, order, start) == my_sslp_v2(g, order, start)
+    dist = my_sslp(g, order, start)
+    ending = findall(x->(x==maximum(dist)), dist);
+    longest_path_dict["$start"] = (maximum(dist), ending)
+    # Check with LongestPath brute force function, omit weights
+    l_path = dfs_longest_path(g, weight, start, ending)
+    println(l_path)
 end
-test_dist = my_sslp_v2(g, order, 5)
-maximum(test_dist)
-# there is some mistake here somewhere
