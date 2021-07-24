@@ -16,7 +16,7 @@ export my_TopSort_by_dfs
 export my_sslp
 export my_sslp_v2
 export cube_space_digraph
-export cone_space_digraph
+# export cone_space_digraph
 export DAG_Plot_2D
 export DAG_Plot_3D
 
