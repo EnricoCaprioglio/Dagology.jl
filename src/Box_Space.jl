@@ -106,10 +106,3 @@ function _cone_space_digraph_check(N::Int64, d::Int64, p = 1.0) # , R::Float16
     end
     return Box_pos, g1, g2
 end
-
-@testset "check two methods are the same" begin
-    for i in 2:1000
-        positions, g, g1 = _cone_space_digraph_check(100, 3, 1.0)
-        @test g == g1
-    end
-end
