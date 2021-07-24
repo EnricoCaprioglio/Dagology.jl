@@ -28,7 +28,7 @@ nodesize =  [LightGraphs.outdegree(g, v) for v in LightGraphs.vertices(g)];
 alphas = nodesize/maximum(nodesize);
 nodefillc = [RGBA(0.0,0.8,0.8,i) for i in alphas];
 # end #
-layout=(args...)->spring_layout(args...; C=20)
+layout=(args...)->spring_layout(args...; C=100)
 gplot(g, nodelabel=collect(1:N), layout=layout, nodefillc=nodefillc, linetype="curve")
 # save to png
 using Compose, Cairo
