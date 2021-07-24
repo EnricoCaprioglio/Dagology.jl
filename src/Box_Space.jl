@@ -3,18 +3,18 @@ using LinearAlgebra
 
 
 """
-    box_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0)
+``box_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0)``
 
     Inputs:
-        N            number of vertices in the final digraph, ``N ∈ \mathbb{N}``
-        d            dimension of the box space, ``d ∈ \mathbb{N}``
-        p            probability that an edge is wired, default ``p = 1.0```
+        N            number of vertices in the final digraph, ``N ∈ mathbb{N}``
+        d            dimension of the box space, ``d ∈ mathbb{N}``
+        p            probability that an edge is wired, default ``p = 1.0``
 
     return Box_pos, g
 
     Outputs:
         Box_pos      Nxd matrix where each row i contains the coordinates of
-                     node i.
+                        node i.
         g            Directed Acyclic Graph, g::SimpleDiGraph{Int64}
 """
 function cube_space_digraph(N::Int64, d::Int64, p = 1.0)
@@ -30,48 +30,86 @@ function cube_space_digraph(N::Int64, d::Int64, p = 1.0)
     return Box_pos, g
 end
 
+# TODO add distance measure and forward connection kenrel, i.e. use R and some notion of distance
+#      to do this, it would be cool to undersatnd how to input a method in the function argumetns
+
 """
-    cone_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0, R::Float16 = Inf16)
-    
+``cone_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0, R::Float16 = Inf16)``
+
     Creates a Directed Acyclic Graph of N vertices, each with coordinates in d
     dimensions. Vertices are connected if the edge is timelike future directed. 
     Coordinates are generated randomly. The generated coordinates are sorted
     according to the time ordering of the first coordinate (``x_0``).
     In general, a vertex ``v = (x_0, x_1, ..., x_{d-1})`` is connected to vertex
-    ``w = (y_0, y_1, ..., y_{d-1})`` if ``|\vec{x} - \vec{y}| ≤ y_0 - x_0``
+    ``w = (y_0, y_1, ..., y_{d-1})`` if ``|vec{x} - vec{y}| ≤ y_0 - x_0``
+    The ``| • |`` indicates the Euclidean metric (norm function in LinearAlgebra package).
 
-    # TODO add distance measure and forward connection kenrel, i.e. use R and some notion of distance
-           to do this, it would be cool to undersatnd how to input a method in the function argumetns
-    
     (same defintion of cone sapce used by Bollobàs and Brightwell in 
     "Box spaces and random partial orders" transactions of the American 
     Mathematical Society, Vol 324, Number 1, March 1991)
 
     Inputs:
-        N            number of vertices in the final digraph, N ∈ \mathbb{N}
-        d            dimension of the box space, d ∈ \mathbb{N}
+        N            number of vertices in the final digraph, N ∈ mathbb{N}
+        d            dimension of the box space, d ∈ mathbb{N}
         p            probability that an edge is wired, default ``p = 1.0```
         R            forward connection kernel parameter, defaul R = Inf16
-
+        
     return Box_pos, g
 
     Outputs:
         Box_pos      Nxd matrix where each row i contains the coordinates of
-                     node i.
+                        node i.
         g            Directed Acyclic Graph, g::SimpleDiGraph{Int64}
 """
-function cone_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0, R::Float16 = Inf16)
+function cone_space_digraph(N::Int64, d::Int64, p = 1.0) # , R::Float16
     time_vec = rand(N);                     # times
     sort!(time_vec);                        # time ordering
     Box_pos = hcat(time_vec,rand(N,d-1));   # positions
     g = SimpleDiGraph(N);
     for i in 1:N
         for j in i:N
-            time_sep = abs(norm(Box_pos[j,2:d]) - norm(Box_pos[i,2:d]))
-            if time_sep < R && isless(rand(1)[1],p)
+            spatial_diff = norm(Box_pos[i,2:end] - Box_pos[j,2:end]);
+            temp_diff = Box_pos[j,1] - Box_pos[i,1];
+            # time_sep = abs(norm(Box_pos[j,2:d]) - norm(Box_pos[i,2:d]))
+            if (spatial_diff < temp_diff && isless(rand(1)[1],p) )
                 add_edge!(g, i, j);
             end
         end
     end
     return Box_pos, g
+end
+
+# the following is just a function for a test to check my understanding
+function _cone_space_digraph_check(N::Int64, d::Int64, p = 1.0) # , R::Float16
+    time_vec = rand(N);                     # times
+    sort!(time_vec);                        # time ordering
+    Box_pos = hcat(time_vec,rand(N,d-1));   # positions
+    g1 = SimpleDiGraph(N);
+    g2 = SimpleDiGraph(N);
+    for i in 1:N
+        for j in 1:N
+            spatial_diff = norm(Box_pos[i,2:end] - Box_pos[j,2:end]);
+            temp_diff = Box_pos[j,1] - Box_pos[i,1];
+            # time_sep = abs(norm(Box_pos[j,2:d]) - norm(Box_pos[i,2:d]))
+            if (spatial_diff < temp_diff && isless(rand(1)[1],p) )
+                add_edge!(g1, i, j);
+            end
+        end
+        for k in i:N
+            spatial_diff = norm(Box_pos[i,2:end] - Box_pos[k,2:end]);
+            temp_diff = Box_pos[k,1] - Box_pos[i,1];
+            # time_sep = abs(norm(Box_pos[j,2:d]) - norm(Box_pos[i,2:d]))
+            if (spatial_diff < temp_diff && isless(rand(1)[1],p) )
+                add_edge!(g2, i, k);
+            end
+        end
+    end
+    return Box_pos, g1, g2
+end
+
+@testset "check two methods are the same" begin
+    for i in 2:1000
+        positions, g, g1 = _cone_space_digraph_check(100, 3, 1.0)
+        @test g == g1
+    end
 end
