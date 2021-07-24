@@ -19,5 +19,6 @@ export cube_space_digraph
 export cone_space_digraph
 export DAG_Plot_2D
 export DAG_Plot_3D
+export _cone_space_digraph_check
 
 end # module
