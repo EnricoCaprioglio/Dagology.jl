@@ -18,7 +18,7 @@ using LinearAlgebra
                      node i.
         g            Directed Acyclic Graph, g::SimpleDiGraph{Int64}
     """
-function box_space_digraph(N::Int64, d::Int64, p = 1.0)
+function cube_space_digraph(N::Int64, d::Int64, p = 1.0)
     Box_pos = rand(N,d)
     g = SimpleDiGraph(N)
     for i in 1:N
