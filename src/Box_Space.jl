@@ -29,9 +29,22 @@ function cube_space_digraph(N::Int64, d::Int64, p = 1.0)
     end
     return Box_pos, g
 end
+# I modified the function such that the Box_pos matrix
+# has ordered time coordinate, this is sufficient to be 
+# able to find the source immediately.
+
+
 
 # TODO add distance measure and forward connection kenrel, i.e. use R and some notion of distance
 #      to do this, it would be cool to undersatnd how to input a method in the function argumetns
+
+# """
+
+# """
+# function d_minkowski()
+    
+#     return
+# end
 
 """
 ``cone_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0, R::Float16 = Inf16)``
@@ -79,7 +92,7 @@ function cone_space_digraph(N::Int64, d::Int64, p = 1.0) # , R::Float16
     return Box_pos, g
 end
 
-# the following is just a function for a test to check my understanding
+# the following is just a function defined for a test
 function _cone_space_digraph_check(N::Int64, d::Int64, p = 1.0) # , R::Float16
     time_vec = rand(N);                     # times
     sort!(time_vec);                        # time ordering
