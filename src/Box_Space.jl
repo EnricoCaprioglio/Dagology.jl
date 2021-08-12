@@ -18,7 +18,8 @@ using LinearAlgebra
         g            Directed Acyclic Graph, g::SimpleDiGraph{Int64}
 """
 function cube_space_digraph(N::Int64, d::Int64, p = 1.0)
-    Box_pos = rand(N,d);
+    positions = rand(N-2,d);
+    Box_pos = vcat(zeros(d)', positions, ones(d)')
     g = SimpleDiGraph(N);
     for i in 1:N
         for j in 1:N
@@ -30,10 +31,7 @@ function cube_space_digraph(N::Int64, d::Int64, p = 1.0)
     return Box_pos, g
 end
 # I modified the function such that the Box_pos matrix
-# has ordered time coordinate, this is sufficient to be 
-# able to find the source immediately.
-
-
+# has one source and one sink.
 
 # TODO add distance measure and forward connection kenrel, i.e. use R and some notion of distance
 #      to do this, it would be cool to undersatnd how to input a method in the function argumetns
