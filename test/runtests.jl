@@ -71,3 +71,17 @@ end
 # topological sorting functions. Recall it is not unique the
 # toplogical order from a single DAG.
 # TODO try using transitive DAGs to test the function
+
+##########################################################################
+# test Minkowski distance
+using Test
+x = collect(3:5);
+y = collect(6:8);
+d = length(x)
+
+@testset "Mink_dist" begin
+    for p in 0.1:0.1:3
+        @test Mink_dist(y,x,length(x),p) == (3^(p)+3^(p)+3^(p))^(1/p)
+        # println("For p = $p we have distance: ", Mink_dist(y,x,d,p))
+    end
+end
