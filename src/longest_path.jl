@@ -74,10 +74,10 @@ function my_sslp(g::SimpleDiGraph{Int64}, order::Array{Int64, 1},
     # loop over all elements > start in the top_sort poset
     # exclude elements that can't be reached by node start
     for (top_sort_i, elem) ∈ enumerate(order[get_pos[1]:end])
-    if print
-        println("\n We are at element: $elem, in place $top_sort_i in the TopSort order,
-         element $elem is at distance: $(dist[elem]) from the source $start.")
-    end
+        if print
+            println("\n We are at element: $elem, in place $top_sort_i in the TopSort order,
+            element $elem is at distance: $(dist[elem]) from the source $start.")
+        end
         if dist[elem] == -Inf       # no path between source and elem
             continue
         else                        # update neighbours distances
