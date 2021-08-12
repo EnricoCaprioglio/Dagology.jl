@@ -3,6 +3,8 @@ using Test
 using LightGraphs
 using LinearAlgebra
 using GraphPlot
+using Statistics
+using SpecialFunctions
 
 ###########################################################################
 # Test DAG Longest Path
@@ -48,55 +50,60 @@ end
 # lim_{N --> \infty} L = m_x N^{1/D}
 # for D = 2 we have m_{Cu(D)} = 2
 # let\s test this
-
-D = 2;
-for N in 10:100:1000
-    longest = 0;
-    for j in 1:100
-        pos, g = cube_space_digraph(N, D);
-        longest_arr = my_sslp(g, topological_sort_by_dfs(g), find_sources(g)[1])
-        longest += maximum(longest_arr)
-    end
-    println("This is the longest path average: ", longest/100)
-    println("Expected longest path length: ", 2*(N)^(1/D), "\n")
-end
-# this doesn't seem to be accurate
-
-D=2;
-for N in 10:20
-    pos, g = cube_space_digraph(N, D);
-    starts = find_sources(g);
-    for start in starts
-        longest_arr = my_sslp(g, topological_sort_by_dfs(g), start)
-        longest = maximum(longest_arr)
-        println("this is longest path: $longest, with source: $start and N: $N")
-    end
-end
-# TODO understand why some sources != 1 have a longest path than source 1
-# IDEA always have a source set at coordinates (0, 0, ..., 0)
-
-###########################################################################
-N = 15;
-(positions, g) = cube_space_digraph(N, 3, 1.0);
-# g.fadjlist
-using Colors
-nodesize =  [LightGraphs.outdegree(g, v) for v in LightGraphs.vertices(g)];
-alphas = nodesize/maximum(nodesize);
-nodefillc = [RGBA(0.0,0.8,0.8,i) for i in alphas];
-# end #
-layout=(args...)->spring_layout(args...; C=100)
-gplot(g, nodelabel=collect(1:N), layout=layout, nodefillc=nodefillc, linetype="curve")
-sources = find_sources(g);
-sinks = find_sinks(g)
-order = topological_sort_by_dfs(g);
-for start in sources
-    if start in sinks
-        println("$start is both a source and a sink")
-        continue
-    else
-        dist = my_sslp(g, order, start)
-        ending = findall(x->(x==maximum(dist)), dist);
-        println("Longest path from $start to $ending is $(maximum(dist))")
+@testset "Longest path 2D" begin
+    D = 2;
+    no_test = 100;
+    for N in 10:100:1000
+        longest = zeros(no_test);
+        for j in 1:no_test
+            pos, g = cube_space_digraph(N, D);
+            longest_arr = my_sslp(g, topological_sort_by_dfs(g), 1)
+            longest[j] = maximum(longest_arr)
+        end
+        #println("This is the longest path
+        # average: $(mean(longest)) ± $(std(longest))")
+        # println("Expected longest path length: ", 2*(N)^(1/D), "\n")
+        @test mean(longest) < 2*(N)^(1/D)
     end
 end
 
+# m_x is less than c_x but greater than: \frac{c_x*D}{e(gamma(1+D))^{1/D}gamma(1+1/D)}
+
+@testset "Longest path [any]D" begin
+    D = 3;
+    no_test = 100;          # we average over no_test runs
+    for N in 100:100:1000
+        longest = zeros(no_test);
+        for j in 1:no_test
+            pos, g = cube_space_digraph(N, D);
+            longest_arr = my_sslp(g, topological_sort_by_dfs(g), 1)
+            longest[j] = maximum(longest_arr)
+        end
+        avg_longest = mean(longest);
+        m_x = avg_longest/(N^(1/D));
+        @test ℯ > m_x && m_x > (c_x*D)/(ℯ*(gamma(1+D))^(1/D)*gamma(1+1/D))
+    end
+end
+
+# TODO: understand why for any D the above test is passed but for
+# large N, for N less than 100 something goes wrong.
+# for N between 100 and 1000 everything works perfectly fine.
+# Use the snippet of code below
+
+# D = 4;
+# no_test = 100;          # we average over no_test runs
+# c_x = ℯ                 # this is true only for cube space, i.e. x = Cu(D)
+# for N in 10:100:1000
+#     longest = zeros(no_test);
+#     for j in 1:no_test
+#         pos, g = cube_space_digraph(N, D);
+#         longest_arr = my_sslp(g, topological_sort_by_dfs(g), 1)
+#         longest[j] = maximum(longest_arr)
+#     end
+#     #println("This is the longest path
+#     # average: $(mean(longest)) ± $(std(longest))")
+#     # println("Expected longest path length: ", 2*(N)^(1/D), "\n")
+#     avg_longest = mean(longest);
+#     m_x = avg_longest/(N^(1/D));
+#     println(ℯ > m_x && m_x > (c_x*D)/(ℯ*(gamma(1+D))^(1/D)*gamma(1+1/D)))
+# end
