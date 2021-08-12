@@ -7,6 +7,7 @@ include("degree_distr.jl")
 include("Box_Space.jl")
 include("Plotting_DAGs.jl")
 include("longest_path.jl")
+include("Minkowski_dist.jl")
 
 # functions to export
 # these functions will be ready to use when using Dagology
@@ -21,5 +22,6 @@ export DAG_Plot_2D
 export DAG_Plot_3D
 export _cone_space_digraph_check
 export find_sinks
+export Mink_dist
 
 end # module
