@@ -460,6 +460,12 @@ git-tree-sha1 = "bfe47e760d60b82b66b61d2d44128b62e3a369fb"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 version = "0.3.5"
 
+[[NetworkLayout]]
+deps = ["GeometryBasics", "LinearAlgebra", "Random", "Requires", "SparseArrays"]
+git-tree-sha1 = "76bbbe01d2e582213e656688e63707d94aaadd15"
+uuid = "46757867-2c16-5918-afeb-47bfcb05e46a"
+version = "0.4.0"
+
 [[NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 
