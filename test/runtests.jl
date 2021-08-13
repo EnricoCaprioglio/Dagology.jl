@@ -26,7 +26,7 @@ end
 ##########################################################################
 # check box_space digraph is a DAG
 @testset "is cube space digraph cyclic" begin
-    for N in 2:100
+    for N in 2:100:1000
         for d in 1:10
             (positions, g) = cube_space_digraph(N, d);
             @test is_cyclic(g) == false
@@ -80,8 +80,9 @@ y = collect(6:8);
 d = length(x)
 
 @testset "Mink_dist" begin
-    for p in 0.1:0.1:3
-        @test Mink_dist(y,x,length(x),p) == (3^(p)+3^(p)+3^(p))^(1/p)
+    for p in 0.5:0.1:3
+        @test d_minkowski(y,x,length(x),p) == (3^(p)+3^(p)+3^(p))^(1/p)
+        println(d_minkowski(y,x,length(x),p))
         # println("For p = $p we have distance: ", Mink_dist(y,x,d,p))
     end
 end
