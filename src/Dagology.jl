@@ -22,6 +22,6 @@ export DAG_Plot_2D
 export DAG_Plot_3D
 export _cone_space_digraph_check
 export find_sinks
-export Mink_dist
+export d_minkowski
 
 end # module
