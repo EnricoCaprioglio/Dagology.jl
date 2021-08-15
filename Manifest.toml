@@ -153,6 +153,12 @@ git-tree-sha1 = "3cc57ad0a213808473eafef4845a74766242e05f"
 uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"
 version = "4.3.1+4"
 
+[[FileIO]]
+deps = ["Pkg", "Requires", "UUIDs"]
+git-tree-sha1 = "256d8e6188f3f1ebfa1a5d17e072a0efafa8c5bf"
+uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+version = "1.10.1"
+
 [[FixedPointNumbers]]
 deps = ["Statistics"]
 git-tree-sha1 = "335bfdceacc84c5cdf16aadc768aa5ddfc5383cc"
@@ -278,6 +284,12 @@ version = "1.3.0"
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
+
+[[JLD2]]
+deps = ["DataStructures", "FileIO", "MacroTools", "Mmap", "Pkg", "Printf", "Reexport", "TranscodingStreams", "UUIDs"]
+git-tree-sha1 = "59ee430ac5dc87bc3eec833cc2a37853425750b4"
+uuid = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+version = "0.4.13"
 
 [[JLLWrappers]]
 deps = ["Preferences"]
@@ -661,6 +673,12 @@ git-tree-sha1 = "3240808c6d463ac46f1c1cd7638375cd22abbccb"
 uuid = "90137ffa-7385-5640-81b9-e52037218182"
 version = "1.2.12"
 
+[[StaticGraphs]]
+deps = ["JLD2", "LightGraphs", "SparseArrays"]
+git-tree-sha1 = "3888baf4e38c52fdb34d0a98fd0e6b9233197040"
+uuid = "4c8beaf5-199b-59a0-a7f2-21d17de635b6"
+version = "0.2.1"
+
 [[Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
@@ -711,6 +729,12 @@ deps = ["LaTeXStrings", "Poppler_jll", "Requires"]
 git-tree-sha1 = "06b36e2baa9b97814ef1993207b71e2e23e9efb5"
 uuid = "37f6aa50-8035-52d0-81c2-5a1d08754b2d"
 version = "3.3.3"
+
+[[TranscodingStreams]]
+deps = ["Random", "Test"]
+git-tree-sha1 = "216b95ea110b5972db65aa90f88d8d89dcb8851c"
+uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
+version = "0.9.6"
 
 [[URIs]]
 git-tree-sha1 = "97bbe755a53fe859669cd907f2d96aee8d2c1355"
