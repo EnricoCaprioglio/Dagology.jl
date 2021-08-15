@@ -46,24 +46,26 @@ using SpecialFunctions
 end
 
 ###########################################################################
-# test using cube_space_digraph
+# test using cube_space_digraph (these tests can be some nice graphs)
 # lim_{N --> \infty} L = m_x N^{1/D}
 # for D = 2 we have m_{Cu(D)} = 2
-# let\s test this
+# let's test this
 @testset "Longest path 2D" begin
     D = 2;
-    no_test = 100;
-    for N in 10:100:1000
-        longest = zeros(no_test);
-        for j in 1:no_test
-            pos, g = cube_space_digraph(N, D);
-            longest_arr = my_sslp(g, topological_sort_by_dfs(g), 1)
-            longest[j] = maximum(longest_arr)
+    no_test = 10;
+    for k in 1:10
+        for N in 10:100:1000
+            longest = zeros(no_test);
+            for j in 1:no_test
+                pos, g = cube_space_digraph(N, D);
+                longest_arr = my_sslp(g, topological_sort_by_dfs(g), 1)
+                longest[j] = maximum(longest_arr)
+            end
+            #println("This is the longest path
+            # average: $(mean(longest)) ± $(std(longest))")
+            # println("Expected longest path length: ", 2*(N)^(1/D), "\n")
+            @test mean(longest) < 2*(N)^(1/D)
         end
-        #println("This is the longest path
-        # average: $(mean(longest)) ± $(std(longest))")
-        # println("Expected longest path length: ", 2*(N)^(1/D), "\n")
-        @test mean(longest) < 2*(N)^(1/D)
     end
 end
 
@@ -71,6 +73,7 @@ end
 
 @testset "Longest path [any]D" begin
     D = 3;
+    c_x = ℯ
     no_test = 100;          # we average over no_test runs
     for N in 100:100:1000
         longest = zeros(no_test);
@@ -107,3 +110,21 @@ end
 #     m_x = avg_longest/(N^(1/D));
 #     println(ℯ > m_x && m_x > (c_x*D)/(ℯ*(gamma(1+D))^(1/D)*gamma(1+1/D)))
 # end
+
+@testset "dijkstra longest paths" begin
+    counter = 0; p0 = 1.5; N = 10; d = 2; fraction = 1;
+    for N in 10:100:1000
+        for i in 1:100
+            counter += 1;
+            # max_R = d_minkowski(ones(N), zeros(N), d, p0);
+            max_R = Inf64
+            (pos, g) = cube_space_digraph(N, d, max_R/fraction, p0);
+            order = topological_sort_by_dfs(g);     # using lightGraphs function
+            dist = my_sslp(g, order, 1)
+            # quite interestingly my_sslp_faster is actually slower than my_sslp
+            new_weights = weights(g).*(-1);
+            ds = dijkstra_shortest_paths(g,1,new_weights)
+            @test dist == ds.dists.*(-1)
+        end
+    end
+end
