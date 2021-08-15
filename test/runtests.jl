@@ -74,12 +74,10 @@ end
 
 ##########################################################################
 # test Minkowski distance
-using Test
-x = collect(3:5);
-y = collect(6:8);
-d = length(x)
-
-@testset "Mink_dist" begin
+@testset "Minkowski distance test" begin
+    x = collect(3:5);
+    y = collect(6:8);
+    d = length(x)
     for p in 0.5:0.1:3
         @test d_minkowski(y,x,length(x),p) == (3^(p)+3^(p)+3^(p))^(1/p)
         println(d_minkowski(y,x,length(x),p))
