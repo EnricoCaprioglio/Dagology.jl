@@ -1,69 +1,65 @@
 using LightGraphs
 using LinearAlgebra
+using StaticGraphs
 
-
-# Idea to optimize the code: instead of throwing some points at random in the space
+# TODO: Idea to optimize the code: instead of throwing some points at random in the space
 # and then connect accoring to the connection kernel we could either order them already
-# this avoid checking if all coordinnates of a point are less than all the coordinates 
+# this avoid checking if all coordinates of a point are less than all the coordinates 
 # of the point it is connecting to.
 
 """
-``box_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0)``
+``cube_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0)``
 
     Inputs:
         N            number of vertices in the final digraph, ``N ∈ mathbb{N}``
         d            dimension of the box space, ``d ∈ mathbb{N}``
-        p            probability that an edge is wired, default ``p = 1.0``
+        prob         probability that an edge is wired, default ``prob = 1.0``
+        R            connection kernel parameter, edge (i, j) is allowed if the 
+                        minkowski distance between i and j is less than R
+                        default: ``R = Inf64``
 
     return Box_pos, g
 
     Outputs:
-        Box_pos      Nxd matrix where each row i contains the coordinates of
+        pos          ``N x d`` matrix where each row i contains the coordinates of
                         node i.
-        g            Directed Acyclic Graph, g::SimpleDiGraph{Int64}
+        g            Directed Acyclic Graph, ``g::SimpleDiGraph{Int64}``
 """
-function cube_space_digraph(N::Int64, d::Int64, p = 1.0)
+function cube_space_digraph(N::Int64, d::Int64, R = Inf64, p = 2.0, prob = 1.0)
     positions = rand(N-2,d);
-    Box_pos = vcat(zeros(d)', positions, ones(d)')
+    pos = vcat(zeros(d)', positions, ones(d)')
     g = SimpleDiGraph(N);
     for i in 1:N
         for j in 1:N
-            if (all(Box_pos[i,:]-Box_pos[j,:].<0) && isless(rand(1)[1],p))
-                add_edge!(g, i, j);
-            end
-        end
-    end
-    return Box_pos, g
-end
-# I modified the function such that the Box_pos matrix
-# has one source and one sink.
-
-# TODO add distance measure and forward connection kenrel, i.e. use R and some notion of distance
-#      to do this, it would be cool to undersatnd how to input a method in the function arguments
-# for now make a new cube_space function with R
-"""
-
-"""
-function cube_space_with_R(N::Int64, d::Int64, R, p0 = 2.0, p = 1.0)
-    positions = rand(N-2,d);
-    Box_pos = vcat(zeros(d)', positions, ones(d)')
-    g = SimpleDiGraph(N);
-    for i in 1:N
-        for j in 1:N
-            if (all(Box_pos[i,:]-Box_pos[j,:].<0) && isless(rand(1)[1],p))
-                if d_minkowski(Box_pos[j,:], Box_pos[i,:], d, p0) < R;
+            if (all(pos[i,:]-pos[j,:].<0) && isless(rand(1)[1], prob))
+                if d_minkowski(pos[j,:], pos[i,:], d, p) < R;
                     add_edge!(g, i, j);
                 end
-                # println("this is the d_minkowski: ", d_minkowski(Box_pos[j,:], Box_pos[i,:], d, p0))
             end
         end
     end
-    return Box_pos, g
+    return pos, g
 end
 
-p0 = 0.9; N = 10; d = 2;
-max_R = d_minkowski(Box_pos[N,:], Box_pos[1,:], d, p0)
-(Box_pos, g) = cube_space_with_R(N, d, max_R, p0);
+"""
+
+"""
+function static_cube_space(N::Int64, d::Int64, R, p0 = 2.0, p = 1.0)
+    fwd = Vector{Tuple{Int64, Int64}}();
+    positions = rand(N-2,d);
+    pos = vcat(zeros(d)', positions, ones(d)')
+    for i in 1:N
+        for j in 1:N
+            if (all(pos[i,:]-pos[j,:].<0) && isless(rand(1)[1],p))
+                if d_minkowski(pos[j,:], pos[i,:], d, p0) < R;
+                    push!(fwd, (i, j))
+                end
+            end
+        end
+    end
+    g = StaticDiGraph(N, fwd, sort(reverse.(fwd)))
+    return pos, g
+end
 
 """
 ``cone_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0, R::Float16 = Inf16)``
