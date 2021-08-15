@@ -1,22 +1,30 @@
 using LightGraphs
 using Plots
 using LinearAlgebra
+using Colors
+using GraphPlot
 
-function DAG_Plot_2D(Box_pos, g)
+function DAG_plot_2D(g, pos, nodesizes = false, nodefillcs = false)
     if length(Box_pos[1,:]) != 2
         throw(DomainError(:wrongdimension))
     end
-    display(scatter(Box_pos[:,2],Box_pos[:,1],legend = false))
-    N = size(Box_pos)[1]
-    for i in 1:N
-        for j ∈ g.fadjlist[i]
-            x = [Box_pos[i,:][1],Box_pos[j,:][1]];
-            y = [Box_pos[i,:][2],Box_pos[j,:][2]];
-            display(plot!(y, x,
-            line=:arrow, arrow=:closed
-            ))
-        end
+    locs_x = pos[:,1];
+    locs_y = ones(N)-pos[:,2];
+    # plot graph
+    if nodesizes
+        nodesize = [degree(g)[v] for v in vertices(g)];
+    else
+        nodesize = ones(size(pos)[1]);
     end
+    if nodefillcs
+        # from https://juliagraphs.org/GraphPlot.jl/
+        max_size = [degree(g)[v] for v in vertices(g)]
+        alphas = max_size/maximum(max_size);
+        nodefillc = [RGBA(0.0,0.8,0.8,i) for i in alphas];
+    else
+        nodefillc = [RGBA(0.0,0.8,0.8,i) for i in ones(size(pos)[1])];
+    end
+    display(gplot(g, locs_x, locs_y, nodefillc=nodefillc, nodesize=nodesize))
 end
 
 function DAG_Plot_3D(Box_pos, g)
