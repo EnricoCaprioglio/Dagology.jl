@@ -1,8 +1,6 @@
 using Base: Int32, Int64
 using LightGraphs
 
-# TODO, better docstrings for all functinos
-
 """
     find_source(g::SimpleDiGraph{Int64})
 
@@ -61,10 +59,14 @@ function my_TopSort_by_dfs(g::SimpleDiGraph{Int64})
     return Array{Int64}(order)
 end
 
+# TODO: add docstring for my_sslp
+
 # Single Source Longest Path
 # this function outputs all the longest distances
 # from starting node to any other node > starting node
+"""
 
+"""
 function my_sslp(g::SimpleDiGraph{Int64}, order::Array{Int64, 1},
     start::Int64, print = false)
     N = Int64(size(g)[1]);
@@ -93,6 +95,7 @@ function my_sslp(g::SimpleDiGraph{Int64}, order::Array{Int64, 1},
     return dist
 end
 
+# function used for my second version of single source longest path algorithm
 function _relax_neighs(dist::Array{Float64}, elem, g)
     neigh_arr = g.fadjlist[elem];
     for neigh in neigh_arr
