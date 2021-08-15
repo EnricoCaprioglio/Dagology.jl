@@ -23,5 +23,7 @@ export DAG_Plot_3D
 export _cone_space_digraph_check
 export find_sinks
 export d_minkowski
+# export cube_space_with_R
+export static_cube_space
 
 end # module
