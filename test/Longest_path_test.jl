@@ -69,8 +69,8 @@ end
     end
 end
 
+###########################################################################
 # m_x is less than c_x but greater than: \frac{c_x*D}{e(gamma(1+D))^{1/D}gamma(1+1/D)}
-
 @testset "Longest path [any]D" begin
     D = 3;
     c_x = ℯ
@@ -111,17 +111,16 @@ end
 #     println(ℯ > m_x && m_x > (c_x*D)/(ℯ*(gamma(1+D))^(1/D)*gamma(1+1/D)))
 # end
 
-@testset "dijkstra longest paths" begin
+###########################################################################
+@testset "dijkstra longest paths comparison" begin
     counter = 0; p0 = 1.5; N = 10; d = 2; fraction = 1;
     for N in 10:100:1000
         for i in 1:100
             counter += 1;
-            # max_R = d_minkowski(ones(N), zeros(N), d, p0);
             max_R = Inf64
             (pos, g) = cube_space_digraph(N, d, max_R/fraction, p0);
-            order = topological_sort_by_dfs(g);     # using lightGraphs function
+            order = topological_sort_by_dfs(g);
             dist = my_sslp(g, order, 1)
-            # quite interestingly my_sslp_faster is actually slower than my_sslp
             new_weights = weights(g).*(-1);
             ds = dijkstra_shortest_paths(g,1,new_weights)
             @test dist == ds.dists.*(-1)
