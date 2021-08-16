@@ -71,7 +71,7 @@ function my_sslp(g::SimpleDiGraph{Int64}, order::Array{Int64, 1},
     start::Int64, print = false)
     N = Int64(size(g)[1]);
     get_pos = findall(x->(x==start), order);        # get starting position
-    dist = zeros(N).-Inf;                           # initialize distance array
+    dist = zeros(N).-typemax(Int64);                           # initialize distance array
     dist[start] = 0;
     # loop over all elements > start in the top_sort poset
     # exclude elements that can't be reached by node start
@@ -80,7 +80,7 @@ function my_sslp(g::SimpleDiGraph{Int64}, order::Array{Int64, 1},
             println("\n We are at element: $elem, in place $top_sort_i in the TopSort order,
             element $elem is at distance: $(dist[elem]) from the source $start.")
         end
-        if dist[elem] == -Inf       # no path between source and elem
+        if dist[elem] == -typemax(Int64)       # no path between source and elem
             continue
         else                        # update neighbours distances
             neigh_arr = g.fadjlist[elem];
@@ -92,7 +92,7 @@ function my_sslp(g::SimpleDiGraph{Int64}, order::Array{Int64, 1},
             end
         end
     end
-    return convert(Vector{Int64}, dists)
+    return convert(Vector{Int64}, dist)
 end
 
 # function used for my second version of single source longest path algorithm
@@ -122,4 +122,39 @@ function my_sslp_v2(g::SimpleDiGraph{Int64}, order::Array{Int64, 1}, start::Int6
         end
     end
     return dist
+end
+
+function get_longest_path_vertices(adjlist, dists, pos, p)
+    d = length(pos[1,:]);
+    value_longest_path = maximum(dists)
+    vertex_longest_path = findall(x -> x == value_longest_path, dists)[1]
+    longest_path_vertices = Vector{Int64}();
+    push!(longest_path_vertices, vertex_longest_path)
+    next_vertex = vertex_longest_path;
+    for i in 1:value_longest_path
+        check_vertex = next_vertex;
+        if check_vertex == 1
+            break
+        end
+        neigh_dists = Vector{Int64}();
+        neighbours = adjlist[check_vertex]
+        for j in neighbours                  # find next vertex in the path from in-degree
+            push!(neigh_dists, dists[j])
+        end
+        index = findall(x -> x == value_longest_path-i, neigh_dists)
+        ind = index[1];
+        if length(index) > 1                 # choose the closest vertex
+            conflicting_distances = [];
+            for l in 1:length(index)
+                vertex_to_check = neighbours[index[l]]
+                push!(conflicting_distances, d_minkowski(pos[check_vertex,:], pos[vertex_to_check,:], d, p))
+            end
+            index2 = findmin(conflicting_distances)[2]  # get index lowest distance
+            next_vertex = neighbours[index[index2]]
+        else
+            next_vertex = neighbours[index[1]]
+        end
+        push!(longest_path_vertices, next_vertex)
+    end
+    return longest_path_vertices
 end
