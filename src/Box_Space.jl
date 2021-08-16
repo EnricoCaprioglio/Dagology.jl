@@ -62,7 +62,7 @@ function static_cube_space(N::Int64, d::Int64, R, p0 = 2.0, p = 1.0)
 end
 
 """
-``cone_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0, R::Float16 = Inf16)``
+``cone_space_digraph(N::Int64, d::Int64, p::Float16 = 1.0, R = Inf64)``
 
     Creates a Directed Acyclic Graph of N vertices, each with coordinates in d
     dimensions. Vertices are connected if the edge is timelike future directed. 
@@ -80,7 +80,7 @@ end
         N            number of vertices in the final digraph, N ∈ mathbb{N}
         d            dimension of the box space, d ∈ mathbb{N}
         p            probability that an edge is wired, default ``p = 1.0```
-        R            forward connection kernel parameter, defaul R = Inf16
+        R            forward connection kernel parameter, defaul R = Inf64
         
     return Box_pos, g
 
@@ -89,7 +89,7 @@ end
                         node i.
         g            Directed Acyclic Graph, g::SimpleDiGraph{Int64}
 """
-function cone_space_digraph(N::Int64, d::Int64, p = 1.0) # , R::Float16
+function cone_space_digraph(N::Int64, d::Int64, p = 1.0) # , R = Inf64
     time_vec = rand(N);                     # times
     sort!(time_vec);                        # time ordering
     Box_pos = hcat(time_vec,rand(N,d-1));   # positions
