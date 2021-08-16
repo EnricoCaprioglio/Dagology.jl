@@ -12,4 +12,3 @@ function d_minkowski(x, y, d, p)
     end
     return result^(1/p)
 end
-
