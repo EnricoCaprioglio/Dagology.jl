@@ -92,7 +92,7 @@ function my_sslp(g::SimpleDiGraph{Int64}, order::Array{Int64, 1},
             end
         end
     end
-    return dist
+    return convert(Vector{Int64}, dists)
 end
 
 # function used for my second version of single source longest path algorithm
