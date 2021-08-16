@@ -4,7 +4,7 @@ using LinearAlgebra
 using Colors
 using GraphPlot
 
-function DAG_plot_2D(g, pos, path, nodesizes = false, nodefillcs = false, rotated = false)
+function DAG_plot_2D(g, pos, path, nodesizes = false, nodefillcs = false, rotated = false, nodelabels = false)
     if length(pos[1,:]) != 2
         throw(DomainError(:wrongdimension))
     end
@@ -32,12 +32,22 @@ function DAG_plot_2D(g, pos, path, nodesizes = false, nodefillcs = false, rotate
             membership[k] = 2
         end
         nodecolor = [colorant"lightseagreen", colorant"red"];
-        nodefillc = nodecolor[membership];
+        nodefillc = nodecolor[convert(Vector{Int64}, membership)];
     end
     if rotated
-        display(gplot(g, x_prime, y_prime, nodefillc=nodefillc, nodesize=nodesize))
+        if nodelabels
+            nodelabel = collect(1:N)
+            display(gplot(g, x_prime, y_prime, nodefillc=nodefillc, nodesize=nodesize, nodelabel=nodelabel))
+        else
+            display(gplot(g, x_prime, y_prime, nodefillc=nodefillc, nodesize=nodesize))
+        end
     else
-        display(gplot(g, locs_x, locs_y, nodefillc=nodefillc, nodesize=nodesize))
+        if nodelabels
+            nodelabel = collect(1:N)
+            display(gplot(g, locs_x, locs_y, nodefillc=nodefillc, nodesize=nodesize, nodelabel=nodelabel))
+        else
+            display(gplot(g, locs_x, locs_y, nodefillc=nodefillc, nodesize=nodesize))
+        end
     end
 end
 
