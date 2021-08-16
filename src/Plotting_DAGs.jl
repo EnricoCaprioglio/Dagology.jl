@@ -4,12 +4,16 @@ using LinearAlgebra
 using Colors
 using GraphPlot
 
-function DAG_plot_2D(g, pos, nodesizes = false, nodefillcs = false)
-    if length(Box_pos[1,:]) != 2
+function DAG_plot_2D(g, pos, path, nodesizes = false, nodefillcs = false, rotated = false)
+    if length(pos[1,:]) != 2
         throw(DomainError(:wrongdimension))
     end
+    N = size(pos)[1];
     locs_x = pos[:,1];
     locs_y = ones(N)-pos[:,2];
+    θ = π/4;
+    x_prime = locs_x.*cos(θ) + locs_y.*sin(θ)
+    y_prime = (locs_y.*cos(θ) - locs_x.*sin(θ)).*5
     # plot graph
     if nodesizes
         nodesize = [degree(g)[v] for v in vertices(g)];
@@ -22,9 +26,19 @@ function DAG_plot_2D(g, pos, nodesizes = false, nodefillcs = false)
         alphas = max_size/maximum(max_size);
         nodefillc = [RGBA(0.0,0.8,0.8,i) for i in alphas];
     else
-        nodefillc = [RGBA(0.0,0.8,0.8,i) for i in ones(size(pos)[1])];
+        # from https://juliagraphs.org/GraphPlot.jl/
+        membership = ones(N);
+        for k in path
+            membership[k] = 2
+        end
+        nodecolor = [colorant"lightseagreen", colorant"red"];
+        nodefillc = nodecolor[membership];
     end
-    display(gplot(g, locs_x, locs_y, nodefillc=nodefillc, nodesize=nodesize))
+    if rotated
+        display(gplot(g, x_prime, y_prime, nodefillc=nodefillc, nodesize=nodesize))
+    else
+        display(gplot(g, locs_x, locs_y, nodefillc=nodefillc, nodesize=nodesize))
+    end
 end
 
 function DAG_Plot_3D(Box_pos, g)
