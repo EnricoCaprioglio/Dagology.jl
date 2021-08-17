@@ -26,5 +26,6 @@ export d_minkowski
 # export cube_space_with_R
 export static_cube_space
 export get_longest_path_vertices
+export get_shortest_path_vertices
 
 end # module
