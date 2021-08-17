@@ -4,7 +4,17 @@ using LinearAlgebra
 using Colors
 using GraphPlot
 
-function DAG_plot_2D(g, pos, path, nodesizes = false, nodefillcs = false, rotated = false, nodelabels = false)
+"""
+``DAG_plot_2D(g, pos, l_path, s_path,
+    nodesizes = false, nodefillcs = false,
+    rotated = false, nodelabels = false,
+    edgestrokes = false)``
+"""
+function DAG_plot_2D(g, pos, l_path, s_path,
+    nodesizes = false, nodefillcs = false,
+    rotated = false, nodelabels = false,
+    edgestrokes = false)
+
     if length(pos[1,:]) != 2
         throw(DomainError(:wrongdimension))
     end
@@ -28,27 +38,89 @@ function DAG_plot_2D(g, pos, path, nodesizes = false, nodefillcs = false, rotate
     else
         # from https://juliagraphs.org/GraphPlot.jl/
         membership = ones(N);
-        for k in path
+        for k in l_path
             membership[k] = 2
         end
-        nodecolor = [colorant"lightseagreen", colorant"red"];
+        for k in s_path
+            membership[k] = 3
+            if k in l_path
+                membership[k] = 4
+            end
+        end
+        membership[1] = 4
+        membership[l_path[1]] = 4
+        nodecolor = [colorant"lightseagreen", colorant"red", colorant"blue", colorant"green"];
         nodefillc = nodecolor[convert(Vector{Int64}, membership)];
+    end
+    if edgestrokes
+        membership2 = ones(g.ne)
+        nodecolor2 = [colorant"lightgray", colorant"red", colorant"blue", colorant"green"];
+        order1 = l_path[end:-1:1];
+        order2 = s_path[end:-1:1];
+        fadjlist = g.fadjlist;
+        for i in 1:length(order1)-1
+            index = findall(x -> x==order1[i+1], fadjlist[order1[i]])
+            sum = 0;
+            if order1[i]>1
+                for j in 1:(order1[i]-1)
+                    sum += length(fadjlist[j])
+                end
+                membership2[abs(sum + index[1])] = 2;
+            else
+                membership2[abs(sum + index[1])] = 2;
+            end
+        end
+        for i in 1:length(order2)-1
+            index = findall(x -> x==order2[i+1], fadjlist[order2[i]])
+            sum = 0;
+            if order2[i]>1
+                for j in 1:(order2[i]-1)
+                    sum += length(fadjlist[j])
+                end
+                if membership2[abs(sum + index[1])] == 2
+                    membership2[abs(sum + index[1])] = 4;
+                else
+                    membership2[abs(sum + index[1])] = 3;
+                end
+            else
+                if membership2[abs(sum + index[1])] == 2
+                    membership2[abs(sum + index[1])] = 4;
+                else
+                    membership2[abs(sum + index[1])] = 3;
+                end
+            end
+        end
+        edgestrokec = nodecolor2[convert(Vector{Int64}, membership2)];
+    else
+        membership2 = ones(g.ne);
+        edgestrokec = nodecolor2[convert(Vector{Int64}, membership2)];
     end
     if rotated
         if nodelabels
             nodelabel = collect(1:N)
-            display(gplot(g, x_prime, y_prime, nodefillc=nodefillc, nodesize=nodesize, nodelabel=nodelabel))
+            my_plot = gplot(g, x_prime, y_prime,
+            nodefillc=nodefillc, nodesize=nodesize,
+            nodelabel=nodelabel, arrowlengthfrac = 0.01,
+            edgestrokec=edgestrokec)
         else
-            display(gplot(g, x_prime, y_prime, nodefillc=nodefillc, nodesize=nodesize))
+            my_plot = gplot(g, x_prime, y_prime,
+            nodefillc=nodefillc, nodesize=nodesize,
+            arrowlengthfrac = 0.01, edgestrokec=edgestrokec)
         end
     else
         if nodelabels
             nodelabel = collect(1:N)
-            display(gplot(g, locs_x, locs_y, nodefillc=nodefillc, nodesize=nodesize, nodelabel=nodelabel))
+            my_plot = gplot(g, locs_x, locs_y,
+            nodefillc=nodefillc, nodesize=nodesize,
+            nodelabel=nodelabel, arrowlengthfrac = 0.01,
+            edgestrokec=edgestrokec)
         else
-            display(gplot(g, locs_x, locs_y, nodefillc=nodefillc, nodesize=nodesize))
+            my_plot = gplot(g, locs_x, locs_y,
+            nodefillc=nodefillc, nodesize=nodesize,
+            arrowlengthfrac = 0.01, edgestrokec=edgestrokec)
         end
     end
+    return my_plot
 end
 
 function DAG_Plot_3D(Box_pos, g)
