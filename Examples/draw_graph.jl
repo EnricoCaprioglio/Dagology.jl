@@ -7,7 +7,7 @@ using Plots
 ##########################################################################
 # Plot a 2D graph
 # set up data (this representation works only for d=2)
-p = 1.5; N = 50; d = 2; fraction = 4;
+p = 1.5; N = 500; d = 2; fraction = 10;
 max_R = d_minkowski(ones(N), zeros(N), d, p);
 
 # choose the kind of graph to use
@@ -22,12 +22,17 @@ vertex_longest_path = findall(x -> x == value_longest_path, dists)[1];
 adjlist = g.badjlist;
 
 longest_path_vertices = get_longest_path_vertices(adjlist, dists, pos, p);
-my_plot = DAG_plot_2D(g, pos, longest_path_vertices, false, false, true)
+dst = longest_path_vertices[1];
+ds = dijkstra_shortest_paths(g,1,weights(g));
+shortest_path_vertices = get_shortest_path_vertices(adjlist, ds.dists, dst, pos, p);
+my_plot = DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, false, false, true)
 
 ##########################################################################
 # to save the plot
 using Compose, Cairo
-draw(PNG("test_graph.png", 16cm, 16cm), my_plot)
+draw(PDF("p_more_1_example.pdf", 16cm, 16cm), DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, true, false, true))
+# draw(PNG("test_graph.png", 16cm, 16cm), DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, true, false))
+# draw(SVG("test_graph.svg", 16cm, 16cm), DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, true, false))
 
 ##########################################################################
 # positive p
@@ -46,5 +51,3 @@ for p in -0.25:-0.25:-2
     y = (abs.(ones(length(x))-abs.(x).^p)).^(1/p);
     display(plot!(x, y))
 end
-
-p = -0.25
