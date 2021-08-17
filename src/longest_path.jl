@@ -142,19 +142,61 @@ function get_longest_path_vertices(adjlist, dists, pos, p)
             push!(neigh_dists, dists[j])
         end
         index = findall(x -> x == value_longest_path-i, neigh_dists)
-        ind = index[1];
         if length(index) > 1                 # choose the closest vertex
             conflicting_distances = [];
             for l in 1:length(index)
                 vertex_to_check = neighbours[index[l]]
-                push!(conflicting_distances, d_minkowski(pos[check_vertex,:], pos[vertex_to_check,:], d, p))
+                push!(conflicting_distances, 
+                d_minkowski(pos[check_vertex,:], pos[vertex_to_check,:], d, p))
             end
             index2 = findmin(conflicting_distances)[2]  # get index lowest distance
             next_vertex = neighbours[index[index2]]
+            if 1 in neighbours[index[1]:index[end]]
+                println("this happened")
+                next_vertex = 1
+            end
         else
             next_vertex = neighbours[index[1]]
         end
         push!(longest_path_vertices, next_vertex)
     end
     return longest_path_vertices
+end
+
+function get_shortest_path_vertices(adjlist, dists, dst, pos, p)
+    d = length(pos[1,:]);
+    value_shortest_path = dists[dst]
+    shortest_path_vertices = Vector{Int64}();
+    push!(shortest_path_vertices, dst)
+    next_vertex = dst;
+    for i in 1:value_shortest_path
+        check_vertex = next_vertex;
+        if check_vertex == 1
+            break
+        end
+        neigh_dists = Vector{Int64}();
+        neighbours = adjlist[check_vertex]
+        for j in neighbours                  # find next vertex in the path from in-degree
+            push!(neigh_dists, dists[j])
+        end
+        index = findall(x -> x == value_shortest_path-i, neigh_dists)
+        if length(index) > 1                 # choose the closest vertex
+            conflicting_distances = [];
+            for l in 1:length(index)
+                vertex_to_check = neighbours[index[l]]
+                push!(conflicting_distances, 
+                d_minkowski(pos[check_vertex,:], pos[vertex_to_check,:], d, p))
+            end
+            index2 = findmin(conflicting_distances)[2]  # get index lowest distance
+            next_vertex = neighbours[index[index2]]
+            if 1 in neighbours
+                println("this happened")
+                next_vertex = 1
+            end
+        else
+            next_vertex = neighbours[index[1]]
+        end
+        push!(shortest_path_vertices, next_vertex)
+    end
+    return shortest_path_vertices
 end
