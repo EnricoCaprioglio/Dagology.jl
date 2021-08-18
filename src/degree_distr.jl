@@ -3,7 +3,7 @@ using LightGraphs
 # just get the length of the g.fadjlist and g.badjlist
 
 """
-degree_distr(g::SimpleDiGraph{Int64})
+``degree_distr(g::SimpleDiGraph{Int64})``
 
     A simple function to get an array with the degree distribution of
     some graph g.
@@ -25,4 +25,27 @@ function degree_distr(g::SimpleDiGraph{Int64})
     k_out = [length(j) for j ∈ g.fadjlist]
     k_in = [length(j) for j ∈ g.badjlist]
     return k_out, k_in
+end
+
+"""
+``frequencies_dict(data, N)``
+
+A simple function that outputs a dictionary storing the frequencies of each value contained in data
+and the number of zeros.
+"""
+function frequencies_dict(data, N)
+    dict = Dict{Int64,Int64}()
+    num_zeros = 0
+    for i in 1:N
+        if data[i] == 0
+            num_zeros += 1
+        else
+            if data[i] ∈ dict.keys
+                dict[data[i]] += 1
+            else
+                dict[data[i]] = 1
+            end
+        end
+    end
+    return dict, num_zeros
 end
