@@ -4,7 +4,7 @@ using LightGraphs
 
 ##########################################################################
 # set up data
-p = 2; N = 20; d = 2; fraction = 3;
+p = 2; N = 50; d = 2; fraction = 5;
 max_R = d_minkowski(ones(N), zeros(N), d, p);
 ##########################################################################
 # choose the kind of graph to use
@@ -44,6 +44,33 @@ for i in 1:(length(shortest_path_vertices)-1)
 end
 max_R = d_minkowski(ones(N), zeros(N), d, p);
 
-println("This is the longest path distance: $long_sum. \n 
-    Compare with the shortest path distance: $short_sum. \n
-    Finally, compare with the maximum minkwski distance in the system: $max_R")
+println("This is the longest path distance: $long_sum")
+println("Compare with the shortest path distance: $short_sum")
+println("Finally, compare with the maximum minkwski distance in the system: $max_R")
+
+# Uncomment if you want to plot
+my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
+shortest_path_vertices, false, false, false, false, true)
+
+##########################################################################
+# some data analysis
+using Distributions
+k_out, k_in = degree_distr(g)
+maximum(k_out)
+maximum(k_in)
+sort(k_out)
+
+distr_out = fit(Normal, k_out)
+distr_in = fit(Normal, k_in)
+
+data = k_out; N = length(k_out)
+f_dict, num_zeros = frequencies_dict(data, N)
+sorted_dict = sort(f_dict)
+# to sort by values we need to use
+sort(collect(zip(values(f_dict),keys(f_dict))))
+
+
+using Plots
+scatter(sorted_dict.keys, sorted_dict.vals)
+histogram(data, bins = (length(sorted_dict.keys)+1))
+
