@@ -7,7 +7,7 @@ using Plots
 ##########################################################################
 # Plot a 2D graph
 # set up data (this representation works only for d=2)
-p = 1.5; N = 500; d = 2; fraction = 10;
+p = 0.5; N = 500; d = 2; fraction = 10;
 max_R = d_minkowski(ones(N), zeros(N), d, p);
 
 # choose the kind of graph to use
@@ -25,7 +25,8 @@ longest_path_vertices = get_longest_path_vertices(adjlist, dists, pos, p);
 dst = longest_path_vertices[1];
 ds = dijkstra_shortest_paths(g,1,weights(g));
 shortest_path_vertices = get_shortest_path_vertices(adjlist, ds.dists, dst, pos, p);
-my_plot = DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, false, false, true)
+my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
+shortest_path_vertices, false, false, false, false, true)
 
 ##########################################################################
 # to save the plot
@@ -44,7 +45,6 @@ for p in 0.25:0.25:4
     display(plot!(x, y))
 end
 # negative p
-gr()
 plot()
 x = collect(0:0.01:1);
 for p in -0.25:-0.25:-2
