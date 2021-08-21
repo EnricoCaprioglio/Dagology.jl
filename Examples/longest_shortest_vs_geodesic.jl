@@ -4,7 +4,7 @@ using LightGraphs
 
 ##########################################################################
 # set up data
-p = 2; N = 50; d = 2; fraction = 5;
+p = 2; N = 1000; d = 2; fraction = 10;
 max_R = d_minkowski(ones(N), zeros(N), d, p);
 ##########################################################################
 # choose the kind of graph to use
@@ -49,28 +49,28 @@ println("Compare with the shortest path distance: $short_sum")
 println("Finally, compare with the maximum minkwski distance in the system: $max_R")
 
 # Uncomment if you want to plot
-my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
-shortest_path_vertices, false, false, false, false, true)
+# my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
+# shortest_path_vertices, false, false, false, false, true)
 
 ##########################################################################
 # some data analysis
 using Distributions
-k_out, k_in = degree_distr(g)
-maximum(k_out)
-maximum(k_in)
-sort(k_out)
 
+k_out, k_in = degree_distr(g)
+println("This is the maximum k_out, $(maximum(k_out)) ")
+println("This is the maximum k_in, $(maximum(k_in)) ")
 distr_out = fit(Normal, k_out)
 distr_in = fit(Normal, k_in)
+println("The mean of k_out is $(distr_out.μ) with standard deviation: $(distr_out.σ)")
+println("The mean of k_in is $(distr_in.μ) with standard deviation: $(distr_in.σ)")
 
-data = k_out; N = length(k_out)
-f_dict, num_zeros = frequencies_dict(data, N)
-sorted_dict = sort(f_dict)
+data = k_out; N = length(k_out);
+f_dict, num_zeros = frequencies_dict(data, N);
+sorted_dict = sort(f_dict);
 # to sort by values we need to use
+# (from https://stackoverflow.com/questions/29848734/is-it-possible-to-sort-a-dictionary-in-julia)
 sort(collect(zip(values(f_dict),keys(f_dict))))
 
-
 using Plots
-scatter(sorted_dict.keys, sorted_dict.vals)
-histogram(data, bins = (length(sorted_dict.keys)+1))
-
+scatter(sorted_dict.keys, (sorted_dict.vals)/maximum(sorted_dict.vals))
+# histogram(data, bins = (length(sorted_dict.keys)+1))
