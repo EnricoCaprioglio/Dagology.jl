@@ -141,3 +141,62 @@ function DAG_Plot_3D(Box_pos, g)
         end
     end
 end
+
+"""
+``function plot_G_with_unit_ball(x_shift,y_shift,r,p)``
+    scatter plot of some points in a graph together with their unit balls.
+
+    x_shif and y_shift need to be vectors.
+"""
+function plot_G_with_unit_ball(x_shift,y_shift,r,p, alpha = 0.25)
+    iters = length(x_shift)
+    my_plot = plot()
+    colors = [:red, :green, :blue, :lightseagreen, :purple, :orange]
+    for t in 1:iters
+        colors = [:red, :green, :blue, :purple, :brown, :orange, :lightseagreen]
+        x = collect(0:0.01:r);
+        to_plot = zeros(length(x)*4, 2);
+        y = (abs.((ones(length(x)).*r).^p-abs.(x).^p)).^(1/p);
+        k = 0;
+        for i in 1:4
+            for j in 1:length(x)
+                if i < 3
+                    to_plot[k+j, 1] = x[j] + x_shift[t]
+                else
+                    to_plot[k+j, 1] = -x[j] + x_shift[t]
+                end
+                if i%2 == 1
+                    to_plot[k+j, 2] = y[j] + y_shift[t]
+                else
+                    to_plot[k+j, 2] = -y[j] + y_shift[t]
+                end
+            end
+            k += length(x)
+        end
+        s = 0
+        for i in 1:4
+            x_prime = to_plot[1+s:s+length(x),1];
+            y_prime = to_plot[1+s:s+length(x),2];
+            # plot lines
+            my_plot = plot!(x_prime, y_prime,
+            color = colors[c], aspect_ratio=:equal, label = "")
+            # fill areas
+            if i%2 == 1
+                my_plot = plot!(x_prime, ones(length(x)).*y_shift[t],
+                fillrange = y_prime, fillalpha = 0.35,
+                label = "", linewidth=0, c = colors[t])
+            else
+                my_plot = plot!(x_prime, y_prime,
+                fillrange = ones(length(x)).*y_shift[t],
+                fillalpha = alpha, label = "",
+                linewidth=0, c = colors[t])
+            end
+            if i == 4
+                my_plot = plot!(label = "p = $p")
+            end
+            s+=length(x)
+        end
+    end
+    scatter!(x_shift,y_shift, c = colors[1:length(x_shift)]) # , label = "ball $t"
+    return my_plot
+end
