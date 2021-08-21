@@ -28,5 +28,6 @@ export static_cube_space
 export get_longest_path_vertices
 export get_shortest_path_vertices
 export frequencies_dict
+export plot_G_with_unit_ball
 
 end # module
