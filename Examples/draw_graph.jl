@@ -34,20 +34,3 @@ using Compose, Cairo
 draw(PDF("p_more_1_example.pdf", 16cm, 16cm), DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, true, false, true))
 # draw(PNG("test_graph.png", 16cm, 16cm), DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, true, false))
 # draw(SVG("test_graph.svg", 16cm, 16cm), DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, true, false))
-
-##########################################################################
-# positive p
-gr()
-plot()
-x = collect(0:0.01:1);
-for p in 0.25:0.25:4
-    y = (abs.(ones(length(x))-abs.(x).^p)).^(1/p);
-    display(plot!(x, y))
-end
-# negative p
-plot()
-x = collect(0:0.01:1);
-for p in -0.25:-0.25:-2
-    y = (abs.(ones(length(x))-abs.(x).^p)).^(1/p);
-    display(plot!(x, y))
-end
