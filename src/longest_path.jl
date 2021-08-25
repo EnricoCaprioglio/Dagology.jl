@@ -1,5 +1,6 @@
 using Base: Int32, Int64
 using LightGraphs
+using Distributions
 
 """
     find_source(g::SimpleDiGraph{Int64})
@@ -199,4 +200,39 @@ function get_shortest_path_vertices(adjlist, dists, dst, pos, p)
         push!(shortest_path_vertices, next_vertex)
     end
     return shortest_path_vertices
+end
+
+"""
+
+"""
+function long_vs_short_path(N, d, p, max_R, fraction)
+    (pos, g) = cube_space_digraph(N, d, max_R/fraction, p);
+    adjlist = g.badjlist;
+    # find longest path
+    dists = my_sslp(g, topological_sort_by_dfs(g), 1);
+    value_longest_path = maximum(dists);
+    vertex_longest_path = findall(x -> x == value_longest_path, dists)[1];
+    longest_path_vertices = get_longest_path_vertices(adjlist, dists, pos, p);
+    # find shertest path
+    dst = longest_path_vertices[1];
+    ds = dijkstra_shortest_paths(g,1,weights(g));
+    shortest_path_vertices = get_shortest_path_vertices(adjlist, ds.dists, dst, pos, p);
+    # calculate distance:
+    long_sum = 0;
+    for i in 1:(length(longest_path_vertices)-1)
+        x_index = longest_path_vertices[i]
+        y_index = longest_path_vertices[i+1]
+        x = pos[x_index,:]
+        y = pos[y_index,:]
+        long_sum += d_minkowski(x,y,d,p)
+    end
+    short_sum = 0;
+    for i in 1:(length(shortest_path_vertices)-1)
+        x_index = shortest_path_vertices[i]
+        y_index = shortest_path_vertices[i+1]
+        x = pos[x_index,:]
+        y = pos[y_index,:]
+        short_sum += d_minkowski(x,y,d,p)
+    end
+    return long_sum, short_sum
 end
