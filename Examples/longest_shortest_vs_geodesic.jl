@@ -1,11 +1,11 @@
 using Dagology
 using LightGraphs
-
+using Distributions
 
 ##########################################################################
 # set up data
-p = 2; N = 1000; d = 2; fraction = 10;
-max_R = d_minkowski(ones(N), zeros(N), d, p);
+p = 0.25; N = 1000; d = 2; fraction = 10;
+max_R = d_minkowski(ones(d), zeros(d), d, p);
 ##########################################################################
 # choose the kind of graph to use
 # (pos, g) = cube_space_digraph(N,d);
@@ -24,6 +24,10 @@ longest_path_vertices = get_longest_path_vertices(adjlist, dists, pos, p);
 dst = longest_path_vertices[1];
 ds = dijkstra_shortest_paths(g,1,weights(g));
 shortest_path_vertices = get_shortest_path_vertices(adjlist, ds.dists, dst, pos, p);
+##########################################################################
+# Uncomment if you want to plot
+my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
+shortest_path_vertices, false, false, true, false, true)
 ##########################################################################
 # calculate distance:
 long_sum = 0;
@@ -48,14 +52,9 @@ println("This is the longest path distance: $long_sum")
 println("Compare with the shortest path distance: $short_sum")
 println("Finally, compare with the maximum minkwski distance in the system: $max_R")
 
-# Uncomment if you want to plot
-# my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
-# shortest_path_vertices, false, false, false, false, true)
-
 ##########################################################################
-# some data analysis
+# some data analysis degree distribution
 using Distributions
-
 k_out, k_in = degree_distr(g)
 println("This is the maximum k_out, $(maximum(k_out)) ")
 println("This is the maximum k_in, $(maximum(k_in)) ")
@@ -74,3 +73,18 @@ sort(collect(zip(values(f_dict),keys(f_dict))))
 using Plots
 scatter(sorted_dict.keys, (sorted_dict.vals)/maximum(sorted_dict.vals))
 # histogram(data, bins = (length(sorted_dict.keys)+1))
+
+##########################################################################
+# get data
+N=500; d=2; p=0.5; fraction = 10;
+max_R = d_minkowski(ones(d), zeros(d), d, p);
+n_tests = 100;
+long_sums = zeros(n_tests); short_sums = zeros(n_tests);
+for i in 1:n_tests
+    long_sum, short_sum = long_vs_short_path(N, d, p, max_R, fraction)
+    long_sums[i] = long_sum
+    short_sums[i] = short_sum
+end
+println("Mean longest path distance: $(mean(long_sums)) ± $(std(long_sums))")
+println("Mean longest path distance: $(mean(short_sums)) ± $(std(short_sums))")
+println("Compare to distance geodesic: $max_R")
