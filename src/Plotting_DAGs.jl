@@ -23,7 +23,7 @@ function DAG_plot_2D(g, pos, l_path, s_path,
     locs_y = ones(N)-pos[:,2];
     θ = π/4;
     x_prime = locs_x.*cos(θ) + locs_y.*sin(θ)
-    y_prime = (locs_y.*cos(θ) - locs_x.*sin(θ)).*5
+    y_prime = (locs_y.*cos(θ) - locs_x.*sin(θ))
     # plot graph
     if nodesizes
         nodesize = [degree(g)[v] for v in vertices(g)];
@@ -145,19 +145,27 @@ end
 """
 ``function plot_G_with_unit_ball(x_shift,y_shift,r,p)``
     scatter plot of some points in a graph together with their unit balls.
+    No more than 6 balls.
 
     x_shif and y_shift need to be vectors.
 """
 function plot_G_with_unit_ball(x_shift,y_shift,r,p, alpha = 0.25)
     iters = length(x_shift)
     my_plot = plot()
-    colors = [:red, :green, :blue, :lightseagreen, :purple, :orange]
+    colors = [];
+    for i in 1:length(x_shift)
+        push!(colors, RGB(rand(1)[1],rand(1)[1],rand(1)[1]))
+    end
+    # colors = [:red, :green, :blue, :lightseagreen, :purple, :orange]
+    c = 1;              # just variable for new color
+    # iterate through each ball to plot
     for t in 1:iters
-        colors = [:red, :green, :blue, :purple, :brown, :orange, :lightseagreen]
+        # colors = [:red, :green, :blue, :purple, :brown, :orange, :lightseagreen]
         x = collect(0:0.01:r);
         to_plot = zeros(length(x)*4, 2);
         y = (abs.((ones(length(x)).*r).^p-abs.(x).^p)).^(1/p);
-        k = 0;
+        k = 0;              # separate quadrants
+        # new iteration since we need to plot one quadrant at a time
         for i in 1:4
             for j in 1:length(x)
                 if i < 3
@@ -174,6 +182,7 @@ function plot_G_with_unit_ball(x_shift,y_shift,r,p, alpha = 0.25)
             k += length(x)
         end
         s = 0
+        # fill area, again one quadrant at a time
         for i in 1:4
             x_prime = to_plot[1+s:s+length(x),1];
             y_prime = to_plot[1+s:s+length(x),2];
@@ -183,7 +192,7 @@ function plot_G_with_unit_ball(x_shift,y_shift,r,p, alpha = 0.25)
             # fill areas
             if i%2 == 1
                 my_plot = plot!(x_prime, ones(length(x)).*y_shift[t],
-                fillrange = y_prime, fillalpha = 0.35,
+                fillrange = y_prime, fillalpha = alpha,
                 label = "", linewidth=0, c = colors[t])
             else
                 my_plot = plot!(x_prime, y_prime,
@@ -196,6 +205,7 @@ function plot_G_with_unit_ball(x_shift,y_shift,r,p, alpha = 0.25)
             end
             s+=length(x)
         end
+        c+=1;
     end
     scatter!(x_shift,y_shift, c = colors[1:length(x_shift)]) # , label = "ball $t"
     return my_plot
