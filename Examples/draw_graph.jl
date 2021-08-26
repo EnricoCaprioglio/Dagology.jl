@@ -3,6 +3,7 @@ using LightGraphs
 using GraphPlot
 using Colors
 using Plots
+using LaTeXStrings
 
 ##########################################################################
 # Plot a 2D graph
@@ -35,3 +36,16 @@ draw(PDF("p_more_1_example.pdf", 16cm, 16cm), DAG_plot_2D(g, pos, longest_path_v
 # draw(PNG("test_graph.png", 16cm, 16cm), DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, true, false))
 # draw(SVG("test_graph.svg", 16cm, 16cm), DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, true, false))
 
+pos, g = cone_space_digraph_test(1000, 3, 1, Inf64)
+# some bits to plot are taken from:
+# https://discourse.julialang.org/t/plots-plotlyjs-latex/38250
+plotlyjs()
+font_var = Plots.font("arial", 12)
+plotlyjs(guidefont=font_var, xtickfont=font_var, 
+   ytickfont=font_var, ztickfont=font_var, legendfont=font_var, 
+   xlabelfont = font_var, ylabelfont = font_var, zlabelfont = font_var,
+   size=(600,400));
+plot(pos[:,2],pos[:,3],pos[:,1], seriestype = :scatter,
+markershape = :utriangle)
+my_plot = plot!(xlims = (-0.5, 0.5), ylims = (-0.5, 0.5), zlims = (0.0,1.0))
+my_plot = plot!(xlabel = L"x_1", ylabel = L"x_2", zlabel = L"t")
