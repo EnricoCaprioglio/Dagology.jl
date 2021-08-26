@@ -14,6 +14,7 @@ max_R = Inf64
 ##########################################################################
 @btime (pos, g) = cube_space_digraph(N, d)
 @btime (pos, g) = static_cube_space(N, d, max_R/fraction)
+@btime (pos, g) = cone_space_digraph_test(N, d, 1, Inf64)
 
 ##########################################################################
 @btime topological_sort_by_dfs(g)
