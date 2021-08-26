@@ -44,20 +44,6 @@ end
     end
 end
 
-###########################################################################
-# test the two cone space methods
-# notice _cone_space_digraph_check() function it is not useful on its own
-# it has been dfeined just for this test
-@testset "check two methods are the same" begin
-    p = 1.0;
-    for N in 2:100
-        for d in 1:10
-            positions, g, g1 = _cone_space_digraph_check(N, d, p)
-            @test g == g1
-        end
-    end
-end
-
 ##########################################################################
 # test Topological Sort
 # compare my TopSort to LightGraphs function
