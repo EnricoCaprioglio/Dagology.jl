@@ -1,4 +1,4 @@
-using Base: Int32, Int64
+# using Base: Int32, Int64
 using LightGraphs
 using Distributions
 
@@ -36,8 +36,8 @@ function _dfs_for_TopSort(index, start, visited, order, g)
 end
 
 # My version of topological sort function
-# notice the package LighGraphs has the similar function
-# topological_sort_by_dfs, I need to check what are the differences
+# NOTICE: the package LighGraphs has the similar function:
+# "topological_sort_by_dfs"
 """
 Simple implementation of DFS algorithm to find the topological order of a DAG.
 Recall, the topological order of a DAG is not unique.
@@ -107,7 +107,7 @@ function _relax_neighs(dist::Array{Float64}, elem, g)
 end
 
 # Just a second version of the single source longest path algorithm.
-# Not sure if calling anoter function to relax the disatnces is faster or
+# Not sure if calling anoter function to relax the distances is faster or
 # slower.
 function my_sslp_v2(g::SimpleDiGraph{Int64}, order::Array{Int64, 1}, start::Int64)
     N = Int64(size(g)[1]);
@@ -125,6 +125,9 @@ function my_sslp_v2(g::SimpleDiGraph{Int64}, order::Array{Int64, 1}, start::Int6
     return dist
 end
 
+"""
+
+"""
 function get_longest_path_vertices(adjlist, dists, pos, p)
     d = length(pos[1,:]);
     value_longest_path = maximum(dists)
@@ -164,6 +167,9 @@ function get_longest_path_vertices(adjlist, dists, pos, p)
     return longest_path_vertices
 end
 
+"""
+
+"""
 function get_shortest_path_vertices(adjlist, dists, dst, pos, p)
     d = length(pos[1,:]);
     value_shortest_path = dists[dst]
@@ -213,7 +219,7 @@ function long_vs_short_path(N, d, p, max_R, fraction)
     value_longest_path = maximum(dists);
     vertex_longest_path = findall(x -> x == value_longest_path, dists)[1];
     longest_path_vertices = get_longest_path_vertices(adjlist, dists, pos, p);
-    # find shertest path
+    # find shortest path
     dst = longest_path_vertices[1];
     ds = dijkstra_shortest_paths(g,1,weights(g));
     shortest_path_vertices = get_shortest_path_vertices(adjlist, ds.dists, dst, pos, p);
