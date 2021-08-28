@@ -1,6 +1,4 @@
-# function to get degree distribution
 using LightGraphs
-# just get the length of the g.fadjlist and g.badjlist
 
 """
 ``degree_distr(g::SimpleDiGraph{Int64})``
