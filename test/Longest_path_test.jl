@@ -113,12 +113,11 @@ end
 
 ###########################################################################
 @testset "dijkstra longest paths comparison" begin
-    counter = 0; p0 = 1.5; N = 10; d = 2; fraction = 1;
+    p = 1.5; N = 10; d = 2; perc = 1;
     for N in 10:100:1000
         for i in 1:100
-            counter += 1;
             max_R = Inf64
-            (pos, g) = cube_space_digraph(N, d, max_R/fraction, p0);
+            (pos, g) = cube_space_digraph(N, d, max_R*perc/100, p);
             order = topological_sort_by_dfs(g);
             dist = my_sslp(g, order, 1)
             new_weights = weights(g).*(-1);
