@@ -1,7 +1,5 @@
 module Dagology
 
-# greet() = print("Hello World!")
-
 # files you want to include
 include("degree_distr.jl")
 include("Box_Space.jl")
@@ -20,7 +18,6 @@ export cube_space_digraph
 export cone_space_digraph
 export DAG_plot_2D
 export DAG_Plot_3D
-export _cone_space_digraph_check
 export find_sinks
 export d_minkowski
 # export cube_space_with_R
