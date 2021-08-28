@@ -1,35 +1,36 @@
 using Dagology
 using LightGraphs
 using Distributions
+using Plots
 
 ##########################################################################
-# set up data
-p = 0.25; N = 1000; d = 2; fraction = 10;
+###############
+# Set up data #
+###############
+p = -0.75; N = 100; d = 2; perc = 7;
 max_R = d_minkowski(ones(d), zeros(d), d, p);
-##########################################################################
-# choose the kind of graph to use
-# (pos, g) = cube_space_digraph(N,d);
-(pos, g) = cube_space_digraph(N, d, max_R/fraction, p);
+## Choose the kind of graph to use
+# (pos, g) = cube_space_digraph(N, d, (max_R/100)*perc, p);
+(pos, g) = cone_space_digraph(N, d, (1/100)*perc);
 # (pos, g) = static_cube_space(N, d, max_R/fraction, p)
 adjlist = g.badjlist;
-##########################################################################
-# find longest path
-dists = my_sslp(g, topological_sort_by_dfs(g), 1);
-value_longest_path = maximum(dists);
-vertex_longest_path = findall(x -> x == value_longest_path, dists)[1];
+## Find longest path
+start = 1;
+dists = my_sslp(g, topological_sort_by_dfs(g), start);
+length_longest_path = maximum(dists);
+vertex_longest_path = findall(x -> x == length_longest_path, dists)[1];
 longest_path_vertices = get_longest_path_vertices(adjlist, dists, pos, p);
 # println("This is the longest path: ", longest_path_vertices[end:-1:1])
-##########################################################################
-# find shertest path
+## Find shortest path
 dst = longest_path_vertices[1];
 ds = dijkstra_shortest_paths(g,1,weights(g));
 shortest_path_vertices = get_shortest_path_vertices(adjlist, ds.dists, dst, pos, p);
 ##########################################################################
-# Uncomment if you want to plot
-my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
-shortest_path_vertices, false, false, true, false, true)
+## Uncomment if you want to plot
+# my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
+# shortest_path_vertices, false, false, false, false, true)
 ##########################################################################
-# calculate distance:
+## calculate distance:
 long_sum = 0;
 for i in 1:(length(longest_path_vertices)-1)
     x_index = longest_path_vertices[i]
@@ -50,10 +51,10 @@ max_R = d_minkowski(ones(N), zeros(N), d, p);
 
 println("This is the longest path distance: $long_sum")
 println("Compare with the shortest path distance: $short_sum")
-println("Finally, compare with the maximum minkwski distance in the system: $max_R")
+println("Finally, compare with the maximum Minkowski distance in the system: $max_R")
 
 ##########################################################################
-# some data analysis degree distribution
+## Some basic data analysis degree distribution
 using Distributions
 k_out, k_in = degree_distr(g)
 println("This is the maximum k_out, $(maximum(k_out)) ")
@@ -75,7 +76,7 @@ scatter(sorted_dict.keys, (sorted_dict.vals)/maximum(sorted_dict.vals))
 # histogram(data, bins = (length(sorted_dict.keys)+1))
 
 ##########################################################################
-# get data
+## get data
 N=500; d=2; p=0.5; fraction = 10;
 max_R = d_minkowski(ones(d), zeros(d), d, p);
 n_tests = 100;
