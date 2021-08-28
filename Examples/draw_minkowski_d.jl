@@ -2,8 +2,13 @@ using Dagology
 using Plots
 
 ##########################################################################
-# plot positive p unit spheres for minkowski distance
-gr()
+#######################################################
+# plot positive p unit spheres for Minkowski distance #
+#######################################################
+## choose backend
+plotlyjs()
+# gr()
+
 plot()
 colors = [:red, :green, :blue, :lightseagreen, :purple, :orange, :pink]
 x = collect(0:0.01:1);
@@ -41,49 +46,42 @@ end
 using LaTeXStrings
 plot!(xlabel = L"x_1", ylabel = L"x_2")
 # plot!(xlims = (0.0, 1.0), ylims = (0.0, 1.0), xticks = 0:0.2:1, yticks = [0,0.5,1])
-# Minkowski inequality along the axis
+
+## Minkowski inequality along the axis for p = 0.25
+p = 0.25;
 x = [0.5, 0.0];
 z = [0.7, 0.0];
-zero_to_z = d_minkowski(z, [0.0,0.0], 2, 0.25)
-zero_to_x_to_z = d_minkowski(x, [0.0,0.0], 2, 0.25) + d_minkowski(z, x, 2, 0.25)
-# consider small variation from axis
+zero_to_z = d_minkowski(z, [0.0,0.0], 2, p)
+zero_to_x_to_z = d_minkowski(x, [0.0,0.0], 2, p) + d_minkowski(z, x, 2, p)
+# we can see that along the axis the minkowski inequality is an equality.
+## consider small variation from axis
 x = [0.5, 0.1];
 z = [0.7, 0.0];
-zero_to_z = d_minkowski(z, [0.0,0.0], 2, 0.25)
-zero_to_x_to_z = d_minkowski(x, [0.0,0.0], 2, 0.25) + d_minkowski(z, x, 2, 0.25)
+zero_to_z = d_minkowski(z, [0.0,0.0], 2, p)
+zero_to_x_to_z = d_minkowski(x, [0.0,0.0], 2, p) + d_minkowski(z, x, 2, p)
+# However, small variation and we get the SUPERADDITIVITY property for 0 < p < 1
+# If you repeat the above for p > 1 we get the SUBADDITIVITY property.
 
 ##########################################################################
-# visualize unit spheres/balls in a graph
-p = 1.2; N = 50; d = 2; fraction = 10;
+## visualize unit spheres in a 2D graph plot
+p = 0.75; N = 20; d = 2; perc = 10;
 max_R = d_minkowski(ones(N), zeros(N), d, p);
-(pos, g) = cube_space_digraph(N, d, max_R/fraction, p);
+(pos, g) = cube_space_digraph(N, d, max_R*perc/100, p);
 x = pos[:,1]
 y = pos[:,2]
 alpha = 0.05;
-my_plot = plot_G_with_unit_ball(x,y,max_R/fraction,p)
+my_plot = plot_G_with_unit_ball(x,y,max_R*perc/100,p)
 plot!(xlims = (-0.5, 1.5), ylims = (-0.5, 1.5),
 xticks = [-0.5,0.0,1.0,1.5], yticks = [-0.5,0.0,1.0,1.5])
 display(my_plot)
 
 ##########################################################################
-# negative p
-# we want d_p(x,y) = 1
-#         (∑_i|x_i-y_i|^p)^(1/p) = 1
-# but now for p < 0 we need to consider x_i > 1 only.
-# Notice it takes a while to plot
+#######################################################
+# plot negative p unit spheres for Minkowski distance #
+#######################################################
 plot()
-x = collect(1.00:0.0001:5.00);
-for p in [5,2,1.5,1.0,0.75]
-    y = (x)./((x.^p - ones(length(x)))).^(1/p);
-    display(plot!(x, y, label = "p = -$p"))
-end
-plot!(xlims = (0.0, 5), ylims = (0.0, 5),
-xticks = [0.0,1.0,2.0, 3.0,4.0,5.0], yticks = [0.0,1.0,2.0, 3.0,4.0,5.0],
-aspect_ratio=:equal)
-
-# negative p but for any r (put any arbitrary value > 0)
-plot()
-r = 0.5;
+# any r > 0 allowed
+r = 1.0;
 x = collect(r:0.0001:5.00);
 for p in [5,2,1.5,1.0,0.75]
     y = (x.*r)./((x.^p - (ones(length(x)).*r).^p)).^(1/p);
@@ -93,21 +91,22 @@ plot!(xlims = (0.0, 5), ylims = (0.0, 5),
 xticks = [0.0,1.0,2.0,3.0,4.0,5.0,r], yticks = [0.0,1.0,2.0, 3.0,4.0,5.0,r],
 aspect_ratio=:equal)
 
-# example of points that have an edge between each other:
+## example of points that DO NOT have an edge between each other:
 p = -0.5; r = 0.5;
 x_1_vec = collect(0.01:0.01:1.5)
 x_2_vec = [0.01, 0.2, 0.5, 0.75, 1.0, 1.5, 2.0, 5.0, 10, 100]
 for x_1 in x_1_vec
     for x_2 in x_2_vec
         distance_M = ((x_1).^p+(x_2).^p)^(1/p)
-        if distance_M > 0.5
+        if distance_M > r # no edge
             println("For x_1: $x_1, and x_2: $x_2 distance is $distance_M")
         end
     end
 end
+# so, if x_1 < r there is an edge for any x_2 (edges start from origin of axis)
 
 ##########################################################################
-# compare Minkowski distance from source to sink for:
+## compare Minkowski distance from source to sink for:
 # p > 0
 for p in [-0.1,-0.2, -0.5,-0.75, -1, -1.5, -2, -5, -10, -100]
     println("For p = $p, 1 over p is $(1/p)")
