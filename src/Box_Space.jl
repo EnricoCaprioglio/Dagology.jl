@@ -181,7 +181,7 @@ function cone_space_digraph(N::Int64, d::Int64, R = Inf64, prob = 1.0)
             end
         end
     else
-        return 1,1
+        return 1,1 # TODO: find a better solution
     end
     # remove not accepted points
     if N_temp-length(to_delete) != (N-2)
