@@ -50,14 +50,14 @@ R = max_R*perc/100
 
 # check cone_space digraph is a DAG
 @testset "cone space size test" begin
-    N = 100
+    N = 1000
     for d in [2,3]
-        for i in 1:1000
+        for i in 1:100
             (pos, g) = cone_space_digraph(N, d, R)
             if pos == 1 && g == 1
                 continue
             else
-                @test vertices(g).stop == N
+                @test vertices(g).stop == N      # check rejection sampling was correct
                 @test is_cyclic(g) == false
             end
         end
