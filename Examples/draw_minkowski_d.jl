@@ -1,24 +1,26 @@
 using Dagology
 using Plots
+using LaTeXStrings
 
 ##########################################################################
 #######################################################
 # plot positive p unit spheres for Minkowski distance #
 #######################################################
 ## choose backend
-plotlyjs()
-# gr()
+# plotlyjs()
+gr()
 
-plot()
+plot(size = (800,800))
 colors = [:red, :green, :blue, :lightseagreen, :purple, :orange, :pink]
 x = collect(0:0.01:1);
 c = 1;
-for p in [0.25, 0.5, 0.75, 1, 2, 4, 50]
-    to_plot = zeros(length(x)*4, 2);
-    y = (abs.((ones(length(x))).^p-abs.(x).^p)).^(1/p);
+for p in [0.25, 0.5, 0.75, 1, 2, 4, 100]
+    to_plot = zeros(length(x)*4, 2);                        # storing array
+    y = (abs.((ones(length(x))).^p-abs.(x).^p)).^(1/p);     # x_2 such that d(x,0) = 1
     k = 0;
+    # add to storing array depending on the respective quadrant
     for i in 1:4
-        for j in 1:length(x)
+        for j in 1:length(x)                                # TODO: get rid of the j loop
             if i < 3
                 to_plot[k+j, 1] = x[j]
             else
@@ -33,87 +35,180 @@ for p in [0.25, 0.5, 0.75, 1, 2, 4, 50]
         k += length(x)
     end
     s = 0
+    if p >= 1
+        labels = "p = $(round(Int,p))"
+    else
+        labels = "p = $p"
+    end
     for i in 1:4
-        display(plot!(to_plot[1+s:s+length(x),1], to_plot[1+s:s+length(x),2],
-        color = colors[c], aspect_ratio=:equal, label = ""))
         if i == 4
-            display(plot!(label = "p = $p"))
+            plot!(to_plot[1+s:s+length(x),1], to_plot[1+s:s+length(x),2],
+            color = colors[c], aspect_ratio=:equal, label = labels, linewidth = 2)
+        else
+            plot!(to_plot[1+s:s+length(x),1], to_plot[1+s:s+length(x),2],
+            color = colors[c], aspect_ratio=:equal, label = "", linewidth = 2)
         end
         s+=length(x)
     end
-    c += 1;
+    c += 1
 end
-using LaTeXStrings
-plot!(xlabel = L"x_1", ylabel = L"x_2")
+# axis labels and size
+plot!(xlabel = L"x_1", ylabel = L"x_2", xguidefontsize=24, yguidefontsize=24)
+# change size of stuff
+plot!(legendfontsize=24, xtickfontsize=18,ytickfontsize=18, legend=:bottomright)
 # plot!(xlims = (0.0, 1.0), ylims = (0.0, 1.0), xticks = 0:0.2:1, yticks = [0,0.5,1])
+plot!(xlims = (-1.1, 1.1), ylims = (-1.1, 1.1), xticks = -1:0.4:1, yticks = -1:0.4:1)
+## Save figure
+savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/metric_ball_Mink.png")
 
-## Minkowski inequality along the axis for p = 0.25
+## Minkowski inequality, triangle check:
 p = 0.25;
-x = [0.5, 0.0];
-z = [0.7, 0.0];
+x = [0.5, 0.5];
+z = [0.7, 0.7];
 zero_to_z = d_minkowski(z, [0.0,0.0], 2, p)
 zero_to_x_to_z = d_minkowski(x, [0.0,0.0], 2, p) + d_minkowski(z, x, 2, p)
-# we can see that along the axis the minkowski inequality is an equality.
-## consider small variation from axis
-x = [0.5, 0.1];
-z = [0.7, 0.0];
+# we can see that along the segment the minkowski inequality is an equality.
+# similarly along the axis.
+## Consider small variation from axis:
+x = [0.5, 0.55];
+z = [0.7, 0.7];
 zero_to_z = d_minkowski(z, [0.0,0.0], 2, p)
 zero_to_x_to_z = d_minkowski(x, [0.0,0.0], 2, p) + d_minkowski(z, x, 2, p)
 # However, small variation and we get the SUPERADDITIVITY property for 0 < p < 1
-# If you repeat the above for p > 1 we get the SUBADDITIVITY property.
-
-##########################################################################
-## visualize unit spheres in a 2D graph plot
-p = 0.75; N = 20; d = 2; perc = 10;
-max_R = d_minkowski(ones(N), zeros(N), d, p);
-(pos, g) = cube_space_digraph(N, d, max_R*perc/100, p);
-x = pos[:,1]
-y = pos[:,2]
-alpha = 0.05;
-my_plot = plot_G_with_unit_ball(x,y,max_R*perc/100,p)
-plot!(xlims = (-0.5, 1.5), ylims = (-0.5, 1.5),
-xticks = [-0.5,0.0,1.0,1.5], yticks = [-0.5,0.0,1.0,1.5])
-display(my_plot)
+# and we get the SUBADDITIVITY property for p > 1.
+println("This is the difference: $(zero_to_z-zero_to_x_to_z)")
+# if the differece is less than zero we have subadditivity, if more than zero we have superadditivity
+println("Then for p = $p, subadditivity: $(zero_to_z-zero_to_x_to_z < 0), superadditivity: $(zero_to_z-zero_to_x_to_z > 0)")
 
 ##########################################################################
 #######################################################
 # plot negative p unit spheres for Minkowski distance #
 #######################################################
-plot()
+gr()
 # any r > 0 allowed
-r = 1.0;
+r = 0.5;
+xticks_arr = [-4.0,-3.0,-2.0,2.0,3.0,4.0,r];
+yticks_arr = [-4.0,-3.0,-2.0,2.0,3.0,4.0,r];
+neg_plot = plot(size = (800,800), xticks = xticks_arr, yticks = yticks_arr)
 x = collect(r:0.0001:5.00);
-for p in [5,2,1.5,1.0,0.75]
-    y = (x.*r)./((x.^p - (ones(length(x)).*r).^p)).^(1/p);
-    display(plot!(x, y, label = "p = -$p"))
-end
-plot!(xlims = (0.0, 5), ylims = (0.0, 5),
-xticks = [0.0,1.0,2.0,3.0,4.0,5.0,r], yticks = [0.0,1.0,2.0, 3.0,4.0,5.0,r],
-aspect_ratio=:equal)
-
-## example of points that DO NOT have an edge between each other:
-p = -0.5; r = 0.5;
-x_1_vec = collect(0.01:0.01:1.5)
-x_2_vec = [0.01, 0.2, 0.5, 0.75, 1.0, 1.5, 2.0, 5.0, 10, 100]
-for x_1 in x_1_vec
-    for x_2 in x_2_vec
-        distance_M = ((x_1).^p+(x_2).^p)^(1/p)
-        if distance_M > r # no edge
-            println("For x_1: $x_1, and x_2: $x_2 distance is $distance_M")
+colors = [:red, :green, :blue, :lightseagreen, :purple, :orange, :pink]
+c = 1;
+for p in [2,1.0,0.75,0.5]
+    to_plot = zeros(length(x)*4, 2);                           # storing array
+    y = (x.*r)./((x.^p - (ones(length(x)).*r).^p)).^(1/p);     # x_2 such that d(x,0) = 1
+    println(y[1:10])
+    k = 0;
+    # add to storing array depending on the respective quadrant
+    for i in 1:4
+        for j in 1:length(x)                                # TODO: get rid of the j loop
+            if i < 3
+                to_plot[k+j, 1] = x[j]
+            else
+                to_plot[k+j, 1] = -x[j]
+            end
+            if i%2 == 1
+                to_plot[k+j, 2] = y[j]
+            else
+                to_plot[k+j, 2] = -y[j]
+            end
         end
+        k += length(x)
     end
+    s = 0
+    if p >= 1
+        labels = "p = -$(round(Int,p))"
+    else
+        labels = "p = -$p"
+    end
+    for i in 1:4
+        if i == 4
+            neg_plot = plot!(
+                to_plot[1+s:s+length(x),1], to_plot[1+s:s+length(x),2],
+                color = colors[c], aspect_ratio=:equal, label = labels, linewidth = 2,
+                xlims = (-5, 5), ylims = (-5, 5),
+            )
+        else
+            neg_plot = plot!(
+                to_plot[1+s:s+length(x),1], to_plot[1+s:s+length(x),2],
+                color = colors[c], aspect_ratio=:equal, label = "", linewidth = 2,
+                xlims = (-5, 5), ylims = (-5, 5),
+            )
+        end
+        s+=length(x)
+    end
+    c += 1
 end
-# so, if x_1 < r there is an edge for any x_2 (edges start from origin of axis)
+y_prime = collect(r:0.0001:5.00)
+x_prime = ones(length(y_prime)).*r
+x_prime = vcat(x_prime,collect(r:0.0001:5.00))
+y_prime = vcat(y_prime, ones(length(y_prime)).*r)
+
+neg_plot = plot!(
+    x_prime, y_prime,
+    color = :black, aspect_ratio=:equal, linewidth = 1.5,
+    xlims = (-5, 5), ylims = (-5, 5),
+    label = "p → ∞", linestyle = :dash
+)
+neg_plot = plot!(
+    x_prime, -y_prime,
+    color = :black, aspect_ratio=:equal, label = "", linewidth = 1.5,
+    xlims = (-5, 5), ylims = (-5, 5), linestyle = :dash
+)
+neg_plot = plot!(
+    -x_prime, y_prime,
+    color = :black, aspect_ratio=:equal, label = "", linewidth = 1.5,
+    xlims = (-5, 5), ylims = (-5, 5), linestyle = :dash
+)
+neg_plot = plot!(
+    -x_prime, -y_prime,
+    color = :black, aspect_ratio=:equal, label = "", linewidth = 1.5,
+    xlims = (-5, 5), ylims = (-5, 5), linestyle = :dash
+)
+# axis labels and size
+neg_plot = plot!(xlabel = L"x_1", ylabel = L"x_2", xguidefontsize=24, yguidefontsize=24)
+# change size of stuff
+neg_plot = plot!(legendfontsize=24, xtickfontsize=18,ytickfontsize=18, legend=:bottomleft)
+
+## Save figure
+savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/reversed_metric_ball_Mink.png")
 
 ##########################################################################
-## compare Minkowski distance from source to sink for:
-# p > 0
-for p in [-0.1,-0.2, -0.5,-0.75, -1, -1.5, -2, -5, -10, -100]
-    println("For p = $p, 1 over p is $(1/p)")
-    println("Then, 2^(1/p) is $(2^(1/p)) \n")
-end
-# p < 0
-for p in [0.1,0.2,0.5,0.75,1,1.5,2,5,10,100]
-    println("For p = $p, 1 over p is $(1/p)")
-    println("Then, 2^(1/p) is $(2^(1/p)) \n")
-end
+## visualize unit spheres in a 2D graph plot
+pyplot()
+gr()
+######################################
+# get data using a box space generator
+p = 2; N = 6; 
+max_R = d_minkowski(ones(d), zeros(d), d, p);
+(pos, g) = cube_space_digraph(N, d, max_R*perc/100, p);
+x = pos[:,1]
+y = pos[:,2]
+######################################
+# or use arbitrary data
+# x = [0, 0.05, 0.5, 0.7, 0.1, 1]
+# y = [0, 0.5, 0.05, 0.5, 0.95, 1]
+x = [0, 0.5, 0.7, 0.1, 1]
+y = [0, 0.05, 0.5, 0.95, 1]
+alpha = 0.05;
+markersizes = 7;
+d = 2; perc = 45;
+
+# Plot graphs for different values of p
+p = 4;
+max_R = d_minkowski(ones(d), zeros(d), d, p);
+R = max_R*perc/100
+my_plot = plot_G_with_unit_ball(x,y,R,p,alpha,[:red, :green, :blue, :lightseagreen, :purple, :orange], markersizes)
+savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/G_with_ball_pp1.png")
+p = 0.5;
+max_R = d_minkowski(ones(d), zeros(d), d, p);
+R = max_R*perc/100
+my_plot = plot_G_with_unit_ball(x,y,R,p,alpha,[:red, :green, :blue, :lightseagreen, :purple, :orange], markersizes)
+savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/G_with_ball_pm1.png")
+p = -0.5;
+max_R = d_minkowski(ones(d), zeros(d), d, p);
+R = max_R*25/100
+my_plot = plot_G_with_unit_ball(x,y,R,p,alpha,[:red, :green, :blue, :lightseagreen, :purple, :orange], markersizes)
+savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/G_with_ball_pm0.png")
+
+# savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/plot_G_with_unit_ball.pdf")
+
