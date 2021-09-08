@@ -150,6 +150,7 @@ function get_longest_path_vertices(adjlist, dists, pos, p)
             conflicting_distances = [];
             for l in 1:length(index)
                 vertex_to_check = neighbours[index[l]]
+                # minimize perpendicular distance
                 push!(conflicting_distances, 
                 d_minkowski(pos[check_vertex,:], pos[vertex_to_check,:], d, p))
             end
@@ -211,8 +212,17 @@ end
 """
 
 """
-function long_vs_short_path(N, d, p, max_R, fraction)
-    (pos, g) = cube_space_digraph(N, d, max_R/fraction, p);
+function long_vs_short_path(N, d, p, perc, space_type = "cube")
+    max_R = d_minkowski(ones(d), zeros(d), d, p);
+    if space_type == "cube"
+        (pos, g) = cube_space_digraph(N, d, max_R*perc/100, p);
+    else space_type == "cone"
+        max_R = 1; # this is how it's defined in cone space
+        (pos, g) = cone_space_digraph(N, d, max_R*perc/100, 1.0);
+        # if pos == 1 && g == 1   # this is a temporary fix due to some issues with rejection sampling, it only happend for small networks
+        #     println("help")
+        # end
+    end
     adjlist = g.badjlist;
     # find longest path
     dists = my_sslp(g, topological_sort_by_dfs(g), 1);
