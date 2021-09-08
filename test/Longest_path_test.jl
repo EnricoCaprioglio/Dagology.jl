@@ -50,9 +50,9 @@ end
 # lim_{N --> \infty} L = m_x N^{1/D}
 # for D = 2 we have m_{Cu(D)} = 2
 # let's test this
-@testset "Longest path 2D" begin
+@testset "Longest path 2D Cube Space" begin
     D = 2;
-    no_test = 10;
+    no_test = 10;      # we average over no_test runs
     for k in 1:10
         for N in 10:100:1000
             longest = zeros(no_test);
@@ -61,7 +61,7 @@ end
                 longest_arr = my_sslp(g, topological_sort_by_dfs(g), 1)
                 longest[j] = maximum(longest_arr)
             end
-            #println("This is the longest path
+            # println("This is the longest path
             # average: $(mean(longest)) ± $(std(longest))")
             # println("Expected longest path length: ", 2*(N)^(1/D), "\n")
             @test mean(longest) < 2*(N)^(1/D)
@@ -71,11 +71,11 @@ end
 
 ###########################################################################
 # m_x is less than c_x but greater than: \frac{c_x*D}{e(gamma(1+D))^{1/D}gamma(1+1/D)}
-@testset "Longest path [any]D" begin
+@testset "Longest path D = 3 Cube Space" begin
     D = 3;
     c_x = ℯ
     no_test = 100;          # we average over no_test runs
-    for N in 100:100:1000
+    for N in 50:100:1000
         longest = zeros(no_test);
         for j in 1:no_test
             pos, g = cube_space_digraph(N, D);
@@ -91,25 +91,53 @@ end
 # TODO: understand why for any D the above test is passed but for
 # large N, for N less than 100 something goes wrong.
 # for N between 100 and 1000 everything works perfectly fine.
-# Use the snippet of code below
+# Use the snippet of code below.
 
-# D = 4;
-# no_test = 100;          # we average over no_test runs
-# c_x = ℯ                 # this is true only for cube space, i.e. x = Cu(D)
-# for N in 10:100:1000
-#     longest = zeros(no_test);
-#     for j in 1:no_test
-#         pos, g = cube_space_digraph(N, D);
-#         longest_arr = my_sslp(g, topological_sort_by_dfs(g), 1)
-#         longest[j] = maximum(longest_arr)
-#     end
-#     #println("This is the longest path
-#     # average: $(mean(longest)) ± $(std(longest))")
-#     # println("Expected longest path length: ", 2*(N)^(1/D), "\n")
-#     avg_longest = mean(longest);
-#     m_x = avg_longest/(N^(1/D));
-#     println(ℯ > m_x && m_x > (c_x*D)/(ℯ*(gamma(1+D))^(1/D)*gamma(1+1/D)))
-# end
+D = 4;
+no_test = 100;          # we average over no_test runs
+c_x = ℯ                 # this is true only for cube space, i.e. x = Cu(D)
+for N in 100:100:600
+    longest = zeros(no_test);
+    for j in 1:no_test
+        pos, g = cube_space_digraph(N, D);
+        longest_arr = my_sslp(g, topological_sort_by_dfs(g), 1)
+        longest[j] = maximum(longest_arr)
+    end
+    #println("This is the longest path
+    # average: $(mean(longest)) ± $(std(longest))")
+    # println("Expected longest path length: ", 2*(N)^(1/D), "\n")
+    avg_longest = mean(longest);
+    m_x = avg_longest/(N^(1/D));
+    check = ℯ > m_x && m_x > (c_x*D)/(ℯ*(gamma(1+D))^(1/D)*gamma(1+1/D));
+    println(ℯ > m_x && m_x > (c_x*D)/(ℯ*(gamma(1+D))^(1/D)*gamma(1+1/D)))
+    if check == false
+        println("this is the avg longest path $avg_longest ± $(std(longest))")
+        println("we have found the value $m_x for m_x, smaller than $((c_x*D)/(ℯ*(gamma(1+D))^(1/D)*gamma(1+1/D))), it should be greater.")
+    end
+end
+
+##########################################################################
+# m_x is less than c_x but greater than: \frac{c_x*D}{e(gamma(1+D))^{1/D}gamma(1+1/D)}
+@testset "Longest path D = 3 Cone Space" begin
+    D = 3;
+    c_x = ℯ*((2^(1-1/D)*(gamma(1+D))^(1/D))/(D));
+    no_test = 100;          # we average over no_test runs
+    for N in 50:100:1000
+        longest = zeros(no_test);
+        for j in 1:no_test
+            pos, g = cube_space_digraph(N, D);
+            longest_arr = my_sslp(g, topological_sort_by_dfs(g), 1)
+            longest[j] = maximum(longest_arr)
+        end
+        avg_longest = mean(longest);
+        m_x = avg_longest/(N^(1/D));
+        @test ℯ > m_x && m_x > (c_x*D)/(ℯ*(gamma(1+D))^(1/D)*gamma(1+1/D))
+        println("this is the avg longest path $avg_longest ± $(std(longest))")
+        println("we have found the value $m_x for m_x, greater than $((c_x*D)/(ℯ*(gamma(1+D))^(1/D)*gamma(1+1/D))) .")
+    end
+end
+
+# TODO write functions for m_x and c_x
 
 ###########################################################################
 @testset "dijkstra longest paths comparison" begin
