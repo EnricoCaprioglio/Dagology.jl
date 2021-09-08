@@ -74,18 +74,3 @@ sort(collect(zip(values(f_dict),keys(f_dict))))
 using Plots
 scatter(sorted_dict.keys, (sorted_dict.vals)/maximum(sorted_dict.vals))
 # histogram(data, bins = (length(sorted_dict.keys)+1))
-
-##########################################################################
-## get data
-N=500; d=2; p=0.5; fraction = 10;
-max_R = d_minkowski(ones(d), zeros(d), d, p);
-n_tests = 100;
-long_sums = zeros(n_tests); short_sums = zeros(n_tests);
-for i in 1:n_tests
-    long_sum, short_sum = long_vs_short_path(N, d, p, max_R, fraction)
-    long_sums[i] = long_sum
-    short_sums[i] = short_sum
-end
-println("Mean longest path distance: $(mean(long_sums)) ± $(std(long_sums))")
-println("Mean longest path distance: $(mean(short_sums)) ± $(std(short_sums))")
-println("Compare to distance geodesic: $max_R")
