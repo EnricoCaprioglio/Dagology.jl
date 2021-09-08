@@ -6,7 +6,7 @@ using Plots
 using LaTeXStrings
 using Distributions
 using LinearAlgebra
-plotlyjs()
+# plotlyjs()
 
 ##########################################################################
 ##############################
@@ -63,12 +63,12 @@ my_plot = plot!(xlabel = L"x_1", ylabel = L"x_2", zlabel = L"t")
 ##########################################################################
 ## Same function but plot edges as well
 N = 200; # use less than 500
-max_R = 1; perc = 10;
+max_R = 1; perc = 5;
 d = 3; # this is fixed for this function
 (pos,g) = cone_space_digraph(N, d, max_R*perc/100, 1.0)
 p = plot(
     pos[:,2],pos[:,3],pos[:,1], aspect_ratio = :equal, seriestype = :scatter,
-    xlims = [-0.5, 0.5], ylims = [-0.5, 0.5], zlims = [0.0, 1.0]
+    xlims = [-0.5, 0.5], ylims = [-0.5, 0.5], zlims = [0.0, 1.0], label = ""
 )
 edge_list = [e for e in edges(g)]
 for e in edge_list
@@ -78,13 +78,13 @@ for e in edge_list
         [pos[source,2],pos[dest,2]],
         [pos[source,3],pos[dest,3]],
         [pos[source,1],pos[dest,1]],
-        arrow=true,arrowsize=10, color=:black,
+        arrow=true,arrowsize=10, color=:grey,
         label="", linewidth = 2, headlength = 0.5,
         headwidth = 2
         )
 end
+plot!(xaxis = false, yaxis = false, zaxis = false)
 display(p)
-
 
 ##########################################################################
 ## Below some methods to sample uniformly from d-sphere and d-balls
