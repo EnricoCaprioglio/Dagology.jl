@@ -2,6 +2,19 @@ using LightGraphs
 using LinearAlgebra
 using StaticGraphs
 
+function RGG(N, R, d = 2)
+    pos = rand(N,d);
+    g = SimpleGraph(N);
+    for i in 1:N
+        for j in 1:N
+            if isless(((pos[i,1]-pos[j,1])^2 + (pos[i,2]-pos[j,2])^2)^(1/2), R) # Euclidean distance
+                add_edge!(g, i, j);
+            end
+        end
+    end
+    return pos, g
+end
+
 # TODO: Idea to optimize the code: instead of throwing some points at random in the space
 # and then connect accoring to the connection kernel we could either order them already
 # this avoid checking if all coordinates of a point are less than all the coordinates 
