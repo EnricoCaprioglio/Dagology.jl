@@ -69,7 +69,7 @@ end
 
 """
 function my_sslp(g::SimpleDiGraph{Int64}, order::Array{Int64, 1},
-    start::Int64, print = false)
+    start::Int64)
     N = Int64(size(g)[1]);
     get_pos = findall(x->(x==start), order);        # get starting position
     dist = zeros(N).-typemax(Int64);                           # initialize distance array
@@ -77,19 +77,12 @@ function my_sslp(g::SimpleDiGraph{Int64}, order::Array{Int64, 1},
     # loop over all elements > start in the top_sort poset
     # exclude elements that can't be reached by node start
     for (top_sort_i, elem) ∈ enumerate(order[get_pos[1]:end])
-        if print
-            println("\n We are at element: $elem, in place $top_sort_i in the TopSort order,
-            element $elem is at distance: $(dist[elem]) from the source $start.")
-        end
         if dist[elem] == -typemax(Int64)       # no path between source and elem
             continue
         else                        # update neighbours distances
             neigh_arr = g.fadjlist[elem];
             for neigh in neigh_arr
                 dist[neigh] = maximum([(dist[elem] + 1), dist[neigh]]);
-                if print
-                    println("The distance of $neigh, neighbour of $elem, is $(dist[neigh])")
-                end
             end
         end
     end
@@ -219,9 +212,6 @@ function long_vs_short_path(N, d, p, perc, space_type = "cube")
     else space_type == "cone"
         max_R = 1; # this is how it's defined in cone space
         (pos, g) = cone_space_digraph(N, d, max_R*perc/100, 1.0);
-        # if pos == 1 && g == 1   # this is a temporary fix due to some issues with rejection sampling, it only happend for small networks
-        #     println("help")
-        # end
     end
     adjlist = g.badjlist;
     # find longest path
