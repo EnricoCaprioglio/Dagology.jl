@@ -1,7 +1,9 @@
 using LightGraphs
 using LinearAlgebra
 using StaticGraphs
+"""
 
+"""
 function RGG(N, R, d = 2)
     pos = rand(N,d);
     g = SimpleGraph(N);
@@ -157,12 +159,14 @@ function cone_space_digraph(N::Int64, d::Int64, R = Inf64, prob = 1.0)
         # uniformly sample points in a 1-ball of radius 1
         N_temp = N*5
         d=2;
-        pos_temp = zeros(N_temp, d)
+        pos_temp = zeros(N_temp, d);
+        denom = 0
         for i in 1:N_temp
+            s = rand(Normal(0,1))
+            t = rand(Normal(0,1))
             u = rand(Normal(0,1))
             v = rand(Normal(0,1))
-            e = rand(Exponential(1))
-            denom = (u*u + v*v + e)^0.5
+            denom = (s*s + t*t + u*u + v*v)^(0.5)
             pos_temp[i, 2] = u/denom
             pos_temp[i, 1] = v/denom
         end
