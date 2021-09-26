@@ -9,12 +9,12 @@ using LaTeXStrings
 ## choose backend
 # plotlyjs()
 gr()
-
+# plot minkowski metric spheres for various values of p
 plot(size = (800,800))
 colors = [:red, :green, :blue, :lightseagreen, :purple, :orange, :pink]
 x = collect(0:0.01:1);
 c = 1;
-for p in [0.25, 0.5, 0.75, 1, 2, 4, 100]
+for p in [1,2] # [0.25, 0.5, 0.75, 1, 2, 4, 100]
     to_plot = zeros(length(x)*4, 2);                        # storing array
     y = (abs.((ones(length(x))).^p-abs.(x).^p)).^(1/p);     # x_2 such that d(x,0) = 1
     k = 0;
@@ -40,6 +40,11 @@ for p in [0.25, 0.5, 0.75, 1, 2, 4, 100]
     else
         labels = "p = $p"
     end
+    if p == 2
+        labels = L"d_2"
+    else p == 1
+        labels = L"d_1"
+    end
     for i in 1:4
         if i == 4
             plot!(to_plot[1+s:s+length(x),1], to_plot[1+s:s+length(x),2],
@@ -59,26 +64,8 @@ plot!(legendfontsize=24, xtickfontsize=18,ytickfontsize=18, legend=:bottomright)
 # plot!(xlims = (0.0, 1.0), ylims = (0.0, 1.0), xticks = 0:0.2:1, yticks = [0,0.5,1])
 plot!(xlims = (-1.1, 1.1), ylims = (-1.1, 1.1), xticks = -1:0.4:1, yticks = -1:0.4:1)
 ## Save figure
-savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/metric_ball_Mink.png")
-
-## Minkowski inequality, triangle check:
-p = 0.25;
-x = [0.5, 0.5];
-z = [0.7, 0.7];
-zero_to_z = d_minkowski(z, [0.0,0.0], 2, p)
-zero_to_x_to_z = d_minkowski(x, [0.0,0.0], 2, p) + d_minkowski(z, x, 2, p)
-# we can see that along the segment the minkowski inequality is an equality.
-# similarly along the axis.
-## Consider small variation from axis:
-x = [0.5, 0.55];
-z = [0.7, 0.7];
-zero_to_z = d_minkowski(z, [0.0,0.0], 2, p)
-zero_to_x_to_z = d_minkowski(x, [0.0,0.0], 2, p) + d_minkowski(z, x, 2, p)
-# However, small variation and we get the SUPERADDITIVITY property for 0 < p < 1
-# and we get the SUBADDITIVITY property for p > 1.
-println("This is the difference: $(zero_to_z-zero_to_x_to_z)")
-# if the differece is less than zero we have subadditivity, if more than zero we have superadditivity
-println("Then for p = $p, subadditivity: $(zero_to_z-zero_to_x_to_z < 0), superadditivity: $(zero_to_z-zero_to_x_to_z > 0)")
+# savefig("C:/Users/enric/Documents/TexMaker/MSc_Dissertation/figures/Eu_Man_metric_spheres.png")
+# savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/metric_ball_Mink.png")
 
 ##########################################################################
 #######################################################
@@ -167,7 +154,7 @@ neg_plot = plot!(
 # axis labels and size
 neg_plot = plot!(xlabel = L"x_1", ylabel = L"x_2", xguidefontsize=24, yguidefontsize=24)
 # change size of stuff
-neg_plot = plot!(legendfontsize=24, xtickfontsize=18,ytickfontsize=18, legend=:bottomleft)
+neg_plot = plot!(legendfontsize=24, xtickfontsize=18,ytickfontsize=18, legend=:bottomright)
 
 ## Save figure
 savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/reversed_metric_ball_Mink.png")
@@ -190,15 +177,67 @@ y = pos[:,2]
 x = [0, 0.5, 0.7, 0.1, 1]
 y = [0, 0.05, 0.5, 0.95, 1]
 alpha = 0.05;
-markersizes = 7;
+markersizes = 14;
 d = 2; perc = 45;
 
-# Plot graphs for different values of p
-p = 4;
+##############################################
+##  Plot graphs for different values of p   ##
+##############################################
+# cube space
+p = 2;
 max_R = d_minkowski(ones(d), zeros(d), d, p);
 R = max_R*perc/100
 my_plot = plot_G_with_unit_ball(x,y,R,p,alpha,[:red, :green, :blue, :lightseagreen, :purple, :orange], markersizes)
-savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/G_with_ball_pp1.png")
+plot!(xlabel = L"x_1", ylabel = L"x_2", xguidefontsize=24, yguidefontsize=24, xtickfontsize=18,ytickfontsize=18)
+savefig("C:/Users/enric/Documents/TexMaker/MSc_Dissertation/figures/G_with_ball_pp1.png")
+
+colors = [:red, :green, :blue, :lightseagreen, :purple, :orange]
+p = scatter(x,y, c = colors[1:length(x)], label = "", markersize = markersizes, aspect_ratio=:equal, size = (800,800))
+plot!(xlims = (-0.4, 1.4), ylims = (-0.4, 1.4), xticks = [0.0,1.0], yticks = [0.0,1.0], grid= false)
+plot!(xlabel = L"x_1", ylabel = L"x_2", xguidefontsize=24, yguidefontsize=24, xtickfontsize=18,ytickfontsize=18)
+savefig("C:/Users/enric/Documents/TexMaker/MSc_Dissertation/figures/G_no_ball_pp1.png")
+
+colors = [:red, :green, :blue, :lightseagreen, :purple, :orange]
+plot(size = (800,800),
+    [x[1],x[2]],
+    [y[1],y[2]],
+    arrow=true,arrowsize=100, color=:grey,
+    label="", linewidth = 2, headlength = 10,
+    headwidth = 40
+)
+plot!(
+    [x[2],x[3]],
+    [y[2],y[3]],
+    arrow=true,arrowsize=100, color=:grey,
+    label="", linewidth = 2, headlength = 10,
+    headwidth = 40
+)
+plot!(
+    [x[3],x[5]],
+    [y[3],y[5]],
+    arrow=true,arrowsize=100, color=:grey,
+    label="", linewidth = 2, headlength = 10,
+    headwidth = 40
+)
+plot!(
+    Shape([x[3]-0.015, x[3]-0.04-0.015, x[3]+0.015-0.015], [y[3]-0.03, y[3]-0.025-0.03, y[3]-0.045-0.03]),
+    opacity=1, linewidth = 0, c = :grey, label = ""
+)
+plot!(
+    Shape([x[2]-0.03, x[2]-0.04-0.03, x[2]-0.03-0.03], [y[2], y[2]+0.025, y[2]-0.035]),
+    opacity=1, linewidth = 0, c = :grey, label = ""
+)
+plot!(
+    Shape([x[5]-0.02, x[5]-0.04-0.02, x[5]+0.01-0.02], [y[5]-0.025, y[5]-0.015-0.025, y[5]-0.035-0.03]),
+    opacity=1, linewidth = 0, c = :grey, label = ""
+)
+
+p = scatter!(x,y, c = colors[1:length(x)], label = "", markersize = markersizes, aspect_ratio=:equal)
+plot!(xlims = (-0.4, 1.4), ylims = (-0.4, 1.4), xticks = [0.0,1.0], yticks = [0.0,1.0], grid= false)
+plot!(xlabel = L"x_1", ylabel = L"x_2", xguidefontsize=24, yguidefontsize=24, xtickfontsize=18,ytickfontsize=18)
+savefig("C:/Users/enric/Documents/TexMaker/MSc_Dissertation/figures/G_with_arrow_pp1.png")
+
+##############################################
 p = 0.5;
 max_R = d_minkowski(ones(d), zeros(d), d, p);
 R = max_R*perc/100
@@ -212,3 +251,21 @@ savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/G_with_ball
 
 # savefig("C:/Users/enric/Documents/Imperial/MSc_Thesis/Poster_figures/plot_G_with_unit_ball.pdf")
 
+## Minkowski inequality, triangle check:
+p = 0.25;
+x = [0.5, 0.5];
+z = [0.7, 0.7];
+zero_to_z = d_minkowski(z, [0.0,0.0], 2, p)
+zero_to_x_to_z = d_minkowski(x, [0.0,0.0], 2, p) + d_minkowski(z, x, 2, p)
+# we can see that along the segment the minkowski inequality is an equality.
+# similarly along the axis.
+## Consider small variation from axis:
+x = [0.5, 0.55];
+z = [0.7, 0.7];
+zero_to_z = d_minkowski(z, [0.0,0.0], 2, p)
+zero_to_x_to_z = d_minkowski(x, [0.0,0.0], 2, p) + d_minkowski(z, x, 2, p)
+# However, small variation and we get the SUPERADDITIVITY property for 0 < p < 1
+# and we get the SUBADDITIVITY property for p > 1.
+println("This is the difference: $(zero_to_z-zero_to_x_to_z)")
+# if the differece is less than zero we have subadditivity, if more than zero we have superadditivity
+println("Then for p = $p, subadditivity: $(zero_to_z-zero_to_x_to_z < 0), superadditivity: $(zero_to_z-zero_to_x_to_z > 0)")
