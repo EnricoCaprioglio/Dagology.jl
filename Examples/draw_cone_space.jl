@@ -15,7 +15,7 @@ using LinearAlgebra
 # this representation works only for d=2
 d = 2;
 ## Set up data (any p = 2, 2 < N < 10000, 0 < perc <= 100)
-N = 200; perc = 10; max_R = 1; prob = 1.0;
+N = 500; perc = 5; max_R = 1; prob = 1.0;
 pos, g = cone_space_digraph(N, d, max_R*perc/100, prob)
 p = 2; # used by get_longest_path_vertices function, p =2 is Euclidean distance
 
@@ -33,6 +33,10 @@ shortest_path_vertices = get_shortest_path_vertices(adjlist, ds.dists, dst, pos,
 # plot final graph
 my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
 shortest_path_vertices, false, false, false, false, true)
+
+using Compose, Cairo
+draw(PNG("C:/Users/enric/Documents/TexMaker/MSc_Dissertation/figures/cone_example.png", 16cm, 16cm),
+DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, false, false, true))
 
 ##############################
 # Plot a 3D cone space graph #
@@ -122,7 +126,7 @@ for i in 1:N
     x[i] = u/norm
     y[i] = v/norm
 end
-plot(x,y, seriestype= :scatter)
+plot(x,y, seriestype= :scatter, aspect_ratio = :equal)
 
 ## Method 8 from source above
 N = 100;
@@ -131,7 +135,7 @@ y = zeros(N)
 for i in 1:N
     u = rand(Normal(0,1))
     v = rand(Normal(0,1))
-    e = rand(Exponential(1))
+    e = rand(Exponential(1.0))
     denom = (u*u + v*v + e)^0.5
     x[i] = u/denom
     y[i] = v/denom
