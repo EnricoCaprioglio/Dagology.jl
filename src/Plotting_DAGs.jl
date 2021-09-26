@@ -151,7 +151,7 @@ end
 """
 function plot_G_with_unit_ball(x_shift, y_shift, r, p, alpha = 0.25, colors = false, markersizes = 5)
     iters = length(x_shift)
-    my_plot = plot()
+    my_plot = plot(size = (800,800))
     if colors == false
         colors = [];
         for i in 1:length(x_shift)
