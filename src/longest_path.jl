@@ -121,7 +121,7 @@ end
 """
 
 """
-function get_longest_path_vertices(adjlist, dists, pos, p)
+function get_longest_path_vertices(adjlist, dists, pos, p, check_conflict = "true")
     d = length(pos[1,:]);
     value_longest_path = maximum(dists)
     vertex_longest_path = findall(x -> x == value_longest_path, dists)[1]
