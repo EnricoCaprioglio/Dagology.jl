@@ -15,7 +15,7 @@ using LinearAlgebra
 # this representation works only for d=2
 d = 2;
 ## Set up data (any p = 2, 2 < N < 10000, 0 < perc <= 100)
-N = 500; perc = 5; max_R = 1; prob = 1.0;
+N = 500; perc = 50; max_R = 1; prob = 1.0;
 pos, g = cone_space_digraph(N, d, max_R*perc/100, prob)
 p = 2; # used by get_longest_path_vertices function, p =2 is Euclidean distance
 
@@ -31,12 +31,13 @@ dst = longest_path_vertices[1];
 ds = dijkstra_shortest_paths(g,1,weights(g));
 shortest_path_vertices = get_shortest_path_vertices(adjlist, ds.dists, dst, pos, p);
 # plot final graph
+arrowlen = 0.03
 my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
-shortest_path_vertices, false, false, false, false, true)
+shortest_path_vertices, false, false, false, false, true, arrowlen)
 
 using Compose, Cairo
-draw(PNG("C:/Users/enric/Documents/TexMaker/MSc_Dissertation/figures/cone_example.png", 16cm, 16cm),
-DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, false, false, true))
+draw(PDF("C:/Users/enric/Documents/TexMaker/MSc_Dissertation/figures/cone_example.pdf", 20cm, 20cm),
+DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, false, false, true, arrowlen))
 
 ##############################
 # Plot a 3D cone space graph #
