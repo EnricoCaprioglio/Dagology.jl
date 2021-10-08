@@ -16,7 +16,7 @@ gr()
 # this representation works only for d=2
 d = 2;
 ## Set up data (any p ∈ Z, 2 < N < 50000, 0 < perc <= 100)
-p = 2.0; N = 500; perc = 10;
+p = -2.0; N = 500; perc = 100;
 max_R = d_minkowski(ones(d), zeros(d), d, p);
 ## create the graph
 (pos, g) = cube_space_digraph(N, d, max_R*perc/100, p);
@@ -45,7 +45,7 @@ shortest_path_vertices, false, false, true, false, true, arrowlen)
 ## To save the plot
 using Compose, Cairo
 # draw(PDF("motivation.pdf", 16cm, 16cm), DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, true, false, true, arrowlen))
-draw(PNG("C:/Users/enric/Documents/TexMaker/MSc_Dissertation/figures/cube_example.png", 16cm, 16cm),
+draw(PDF("C:/Users/enric/Documents/TexMaker/MSc_Dissertation/figures/cube_example.pdf", 20cm, 20cm),
     DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, true, false, true, arrowlen)
 )
 # draw(SVG("test_graph.svg", 16cm, 16cm), DAG_plot_2D(g, pos, longest_path_vertices, shortest_path_vertices, false, false, true, false))
