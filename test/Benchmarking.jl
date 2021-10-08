@@ -12,7 +12,7 @@ max_R = Inf64
 (pos, g) = cube_space_digraph(N, d, max_R*perc/100)
 
 ##########################################################################
-@btime (pos, g) = cube_space_digraph(N, d, max_R*perc/100, p, prob)
+@benchmark (pos, g) = cube_space_digraph(N, d, max_R*perc/100, p, prob)
 @btime (pos, g) = static_cube_space(N, d, max_R*perc/100, p, prob)
 @btime (pos, g) = cone_space_digraph(N, d, max_R*perc/100, prob)
 
@@ -63,3 +63,11 @@ ds = dijkstra_shortest_paths(g,1,new_weights)
 order = topological_sort_by_dfs(g);     # using lightGraphs function
 new_weights = weights(g).*(-1);
 @btime ds = dijkstra_shortest_paths(g,1,new_weights)
+
+store_e = zeros(1000)
+for i in 1:1000
+    (pos, g) = cube_space_digraph(1000, 2, Inf*perc/100, 2, 1)
+    store_e[i] = g.ne
+end
+mean(store_e)
+std(store_e)
