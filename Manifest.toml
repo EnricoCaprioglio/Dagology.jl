@@ -817,6 +817,12 @@ version = "0.6.1"
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
+[[TickTock]]
+deps = ["Dates"]
+git-tree-sha1 = "06b7f8269ef74671a8a7c5b2e7d4e670e55c37b7"
+uuid = "9ff05d80-102d-5586-aa04-3a8bd1a90d20"
+version = "1.1.0"
+
 [[TikzPictures]]
 deps = ["LaTeXStrings", "Poppler_jll", "Requires", "Tectonic"]
 git-tree-sha1 = "a08671c0979063a437378f6410bb75a465f3cd1c"
