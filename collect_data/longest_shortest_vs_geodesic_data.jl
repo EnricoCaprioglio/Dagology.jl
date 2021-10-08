@@ -7,11 +7,11 @@ using Plots
 ###############
 # Set up data #
 ###############
-p = -0.75; N = 100; d = 2; perc = 7;
+p = 0.75; N = 500; d = 2; perc = 10;
 max_R = d_minkowski(ones(d), zeros(d), d, p);
 ## Choose the kind of graph to use
-# (pos, g) = cube_space_digraph(N, d, (max_R/100)*perc, p);
-(pos, g) = cone_space_digraph(N, d, (1/100)*perc);
+(pos, g) = cube_space_digraph(N, d, (max_R/100)*perc, p);
+# (pos, g) = cone_space_digraph(N, d, (1/100)*perc);
 # (pos, g) = static_cube_space(N, d, max_R/fraction, p)
 adjlist = g.badjlist;
 ## Find longest path
@@ -27,8 +27,8 @@ ds = dijkstra_shortest_paths(g,1,weights(g));
 shortest_path_vertices = get_shortest_path_vertices(adjlist, ds.dists, dst, pos, p);
 ##########################################################################
 ## Uncomment if you want to plot
-# my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
-# shortest_path_vertices, false, false, false, false, true)
+my_plot = DAG_plot_2D(g, pos, longest_path_vertices, 
+shortest_path_vertices, false, false, false, false, true)
 ##########################################################################
 ## calculate distance:
 long_sum = 0;
@@ -47,7 +47,7 @@ for i in 1:(length(shortest_path_vertices)-1)
     y = pos[y_index,:]
     short_sum += d_minkowski(x,y,d,p)
 end
-max_R = d_minkowski(ones(N), zeros(N), d, p);
+max_R = d_minkowski(ones(d), zeros(d), d, p);
 
 println("This is the longest path distance: $long_sum")
 println("Compare with the shortest path distance: $short_sum")
