@@ -1,3 +1,4 @@
 
 *.jld
 *.png
+collect_data/load_and_plot.jl
