@@ -8,22 +8,23 @@ using SpecialFunctions
 using LaTeXStrings
 using Plots
 
-## CUBE SPACE
+## CUBE SPACE (fixed p)
 ##############################
 # get data # vary perc and N #
 ##############################
+max_i = 12;
 for p in [-0.5]
     for perc in [30]
         space_type = "cube" # either cube or cone
-        d=2; no_test = 100;
+        d=2; no_test = 100; # average over 100 simulations
         long_sums = zeros(no_test); short_sums = zeros(no_test);
         filename = "long_short_$(space_type)_dim_$(d)_avg_test_$(no_test)_perc_$(perc)_parameterp_$(p)poster"
         # define storing arrays
-        store_N = [2^i for i in 1:12]
-        store_long = zeros(12,2)
-        store_short = zeros(12,2)
+        store_N = [2^i for i in 1:max_i]
+        store_long = zeros(max_i,2)
+        store_short = zeros(max_i,2)
         # get data
-        for j in 1:10
+        for j in 1:max_i
             N = store_N[j]
             for i in 1:no_test
                 long_sum, short_sum = long_vs_short_path(N, d, p, perc)
@@ -51,7 +52,7 @@ for p in [-0.5]
     end
 end
 
-## CUBE SPACE
+## CUBE SPACE (fixed perc)
 ###########################
 # get data # vary p and N #
 ###########################
