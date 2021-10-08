@@ -53,7 +53,7 @@ function cube_space_digraph(N::Int64, d::Int64, R = Inf64, p = 2.0, prob = 1.0)
     for i in 1:N
         for j in 1:N
             if (all(pos[i,:]-pos[j,:].<0) && isless(rand(1)[1], prob))
-                if d_minkowski(pos[j,:], pos[i,:], d, p) < R;
+                if d_minkowski(pos[j,:], pos[i,:], d, p) <= R;
                     add_edge!(g, i, j);
                 end
             end
