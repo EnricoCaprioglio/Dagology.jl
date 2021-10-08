@@ -7,7 +7,7 @@ set_default_graphic_size(20cm,20cm)
 ##########################################################################
 ###############
 # Set up data #
-###############
+############### 
 p = -0.5; N = 1000; d = 2; perc = 5;
 max_R = d_minkowski(ones(d), zeros(d), d, p);
 ## Choose the kind of graph to use
