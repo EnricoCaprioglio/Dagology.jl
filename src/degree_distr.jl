@@ -8,7 +8,7 @@ using LightGraphs
 
     Input:
         g           graph we want to find the distribution of
-                    at the moment this is onlu for simple direcetd graphs
+                    at the moment this is only for simple direcetd graphs
                     i.e. g::SimpleDiGraphInt64{}
 
     return k_out, k_in
