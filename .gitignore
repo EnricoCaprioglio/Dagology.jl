@@ -5,3 +5,5 @@ collect_data/load_and_plot.jl
 collect_data/local_L_vs_S.jl
 collect_data/local_L_vs_S_cone.jl
 collect_data/randomSampleplots.jl
+collect_data/plot_data_dissertation.jl
+collect_data/plotting_data_poster.jl
